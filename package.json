@@ -1,0 +1,23 @@
+{
+  "name": "combined-search",
+  "version": "0.3.0",
+  "description": "combined search with ripgrep",
+  "main": "src/combined-search.js",
+  "dependencies": {
+    "bluebird": "3.7.1",
+    "commander": "4.0.1",
+    "open": "7.0.0",
+    "react-dev-utils": "9.1.0",
+    "tmp": "0.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "cs": "./cli.js",
+    "combined-search": "./cli.js"
+  },
+  "author": "evegreen",
+  "license": "MIT"
+}

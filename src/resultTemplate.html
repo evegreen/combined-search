@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>$$QUERY_PATTERNS_TITLE$$</title>
+  <style type="text/css">
+    .QueryTitle {
+      margin: 5px;
+      font-size: 28px;
+    }
+    .Stats {
+      margin: 5px;
+      font-size: 26px;
+    }
+    .Highlight {
+      font-weight: bold;
+    }
+    .MatchTable {
+      margin: 5px;
+      font-size: 24px;
+    }
+    .MatchTable tr:nth-child(2n) {
+      background-color: #e8edff;
+    }
+    .MatchCount {
+      min-width: 40px;
+      text-align: center;
+    }
+    .ExcludeButton {
+      min-width: 40px;
+      text-align: center;
+    }
+    .ExcludedMatch {
+      background-color: #f4cccc !important;
+      text-decoration: line-through;
+    }
+    .SettingsButton {
+      width: 50px;
+      height: 50px;
+      position: fixed;
+      top: 5px;
+      right: 5px;
+    }
+    .SettingsPanel {
+      position: fixed;
+      top: 60px;
+      right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="QueryTitle">
+    $$QUERY_TITLE$$
+  </div>
+  <div class="Stats">
+    $$STATS$$
+  </div>
+  <table class="MatchTable">
+    $$MATCHES$$
+  </table>
+  <div class="SettingsButton" onclick="toggleSettings(this);">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 488.189 488.189" style="enable-background:new 0 0 488.189 488.189;" xml:space="preserve">
+      <g>
+        <g>
+          <path
+            d="M326.9,67.166c6.7-14.5,13.5-28.9,20.6-44.2c-78.6-33.1-155.2-31.5-228.4,12.1C48.3,77.166,9.9,141.166,0,223.566    c16.8,1.5,32.7,2.9,48.6,4.2C57.3,103.266,194.9,7.766,326.9,67.166z"
+          />
+          <path
+            d="M484.7,202.466c-15.8,2.7-31.5,5.5-47.9,8.3c8.5,57-3.3,108.4-38.1,153.4c-34.6,44.8-81,69.4-137.7,75.7    c1.4,16.1,2.8,31.8,4.1,47.5C383.8,483.166,511,363.966,484.7,202.466z"
+          />
+          <path
+            d="M47.9,262.066c-15.1,1.3-30.8,2.7-46.5,4c3.7,99.5,90.5,211.5,221.4,222.1c1.4-16.1,2.8-31.9,4.1-47.2    C124.5,423.866,65.2,364.566,47.9,262.066z"
+          />
+          <path
+            d="M398.9,125.566c12.2,15.8,21.6,33.2,28.9,52.4c15.2-5.5,30.2-11,45.9-16.7c-18.1-48.2-47.6-86.6-89.5-116.7    c-9.3,13.3-18.5,26.3-28,39.9C372.4,96.366,386.8,109.866,398.9,125.566z"
+          />
+          <path
+            d="M267.2,384.166v-19.1c16.3-3.1,32.1-9.6,46.3-19.4l13.6,13.6c5.1,5,13.2,5,18.3,0l14.1-14.1c5-5.1,5-13.2,0-18.3    l-13.8-13.8c9.6-14.2,15.9-30,18.9-46.2h19.6c7.1,0,12.9-5.8,12.9-12.9v-20c0-7.1-5.8-12.9-12.9-12.9h-19.7    c-3.1-16.2-9.5-31.8-19.1-45.9l14-14c5-5.1,5-13.2,0-18.3l-14.3-14.2c-5.1-5-13.2-5-18.3,0l-14,14c-14.1-9.6-29.8-16-46-19.1    v-19.7c0-7.1-5.8-12.9-12.9-12.9h-20c-7.1,0-12.9,5.8-12.9,12.9v19.6c-16.2,3-32,9.4-46.2,19l-13.7-13.6c-5.1-5-13.2-5-18.3,0    l-14.1,14.2c-5,5.1-5,13.2,0,18.3l13.6,13.6c-9.8,14.2-16.2,30-19.3,46.3h-19.1c-7.1,0-12.9,5.8-12.9,12.9v20    c0,7.1,5.8,12.9,12.9,12.9h19c3.1,16.4,9.5,32.3,19.2,46.5l-13.2,13.5c-5,5.1-5,13.2,0,18.3l14.1,14.1c5.1,5,13.2,5,18.3,0    l13.4-13.4c14.3,9.7,30.2,16.1,46.6,19.2v19c0,7.1,5.8,12.9,12.9,12.9h20C261.4,397.066,267.2,391.266,267.2,384.166z     M197,291.266c-26-26-26.1-68.2-0.1-94.2s68.2-26.1,94.2-0.1s26.1,68.2,0.1,94.2C265.3,317.166,223.1,317.266,197,291.266z"
+          />
+        </g>
+      </g>
+    </svg>
+  </div>
+  <div class="SettingsPanel">
+    <span>
+      <a href="https://github.com/webpack/webpack-dev-server" target="_blank">webpack-dev-server</a> or <a href="https://github.com/evegreen/combined-search/blob/master/openEditorService.js" target="_blank">openEditorService</a> local port:&nbsp;
+    </span>
+    <input id="port" type="number" onchange="handleChangeOpenEditorPort(this);">
+  </div>
+  <script type="text/javascript">
+    'use strict';
+
+    const matchStringsEnabled = $$MATCH_STRINGS_ENABLED$$;
+    const excludeIcon = `$$EXCLUDE_ICON$$`;
+    const undoIcon = `$$UNDO_ICON$$`;
+    const arrowDownIcon = `$$ARROW_DOWN_ICON$$`;
+    const arrowRightIcon = `$$ARROW_RIGHT_ICON$$`;
+    const EXCLUDE_CLASSNAME = 'ExcludedMatch';
+    const LOCAL_STORAGE_OPEN_EDITOR_PORT_KEY = 'openEditorServicePort';
+    let openEditorServicePort = Number(localStorage.getItem(LOCAL_STORAGE_OPEN_EDITOR_PORT_KEY)) || 3000;
+    document.querySelector('#port').value = openEditorServicePort;
+    const settingsPanel = document.querySelector('.SettingsPanel');
+    toggleDisplayNone(settingsPanel);
+    function openEditor(absPath, lineNumber = 1) {
+      const encodedAbsPath = encodeURIComponent(absPath);
+      const url = `http://localhost:${openEditorServicePort}/__open-stack-frame-in-editor?fileName=${encodedAbsPath}&lineNumber=${lineNumber}`;
+      const xhr = new XMLHttpRequest();
+      try {
+        xhr.open('GET', url, false);
+        xhr.send(null);
+      } catch (err) {
+        // do nothing, because WDS (react-dev-utils editor opener)
+        // will not respond anything
+      }
+    }
+    function handleChangeOpenEditorPort(input) {
+      const newPort = Number(input.value);
+      openEditorServicePort = newPort;
+      localStorage.setItem(LOCAL_STORAGE_OPEN_EDITOR_PORT_KEY, newPort);
+    }
+    function toggleMatchExclude(excludeButtonElem, newExcludeState, isFinalChange) {
+      const matchLineElem = excludeButtonElem.parentElement;
+      let matchClassList = matchLineElem.classList;
+      matchClassList.toggle(EXCLUDE_CLASSNAME, newExcludeState);
+      const isExcluded = matchClassList.contains(EXCLUDE_CLASSNAME);
+      excludeButtonElem.innerHTML = isExcluded ? undoIcon : excludeIcon;
+      if (matchStringsEnabled && !newExcludeState && !isFinalChange) {
+        const file = getDatasetFileAttr(matchLineElem);
+        const fileMatchLine = findParentFileMatchLine(file);
+        if (isExcluded) {
+          if (isAllSiblingsExcluded(file)) {
+            toggleMatchExclude(fileMatchLine.children[2], true, true);
+          }
+        } else {
+          if (fileMatchLine.classList.contains(EXCLUDE_CLASSNAME)) {
+            toggleMatchExclude(fileMatchLine.children[2], false, true);
+          }
+        }
+      }
+
+      return isExcluded;
+    }
+    function toggleFileExclude(excludeButtonElem) {
+      const matchLineElem = excludeButtonElem.parentElement;
+      const file = getDatasetFileAttr(matchLineElem);
+      const isExcluded = toggleMatchExclude(excludeButtonElem, undefined, true);
+      const isCollapsed = matchLineElem.dataset.collapsed;
+      findSiblings(file).map(
+        matchElem => matchElem.children[2]
+      ).forEach(
+        matchCloseButton => toggleMatchExclude(matchCloseButton, isExcluded, true)
+      );
+      if (isExcluded && !isCollapsed) {
+        const collapseIcon = matchLineElem.children[0].children[0];
+        toggleCollapseMatchStrings(collapseIcon);
+      }
+    }
+    function isAllSiblingsExcluded(filePath) {
+      return !findSiblings(filePath).some(
+        matchLineElem => !matchLineElem.classList.contains(EXCLUDE_CLASSNAME)
+      );
+    }
+    function findSiblings(filePath) {
+      return Array.from(
+        document.querySelectorAll(`.MatchTable tr[data-parent-file="${filePath}"]`)
+      );
+    }
+    function findParentFileMatchLine(filePath) {
+      return document.querySelector(`.MatchTable tr[data-file="${filePath}"]`);
+    }
+    function getDatasetFileAttr(lineElem) {
+      return lineElem.dataset.file || lineElem.dataset.parentFile;
+    }
+    function toggleCollapseMatchStrings(collapseIcon) {
+      const fileMatchLine = collapseIcon.parentElement.parentElement;
+      if (fileMatchLine.dataset.collapsed) {
+        collapseIcon.innerHTML = arrowDownIcon;
+        delete fileMatchLine.dataset.collapsed;
+      } else {
+        collapseIcon.innerHTML = arrowRightIcon;
+        fileMatchLine.dataset.collapsed = true;
+      }
+
+      const file = getDatasetFileAttr(fileMatchLine);
+      findSiblings(file)
+        .forEach(
+          matchElem => toggleDisplayNone(matchElem)
+        );
+    }
+    function toggleDisplayNone(elem) {
+      elem.style.display = elem.style.display === 'none' ? '' : 'none';
+    }
+    function toggleSettings(settingsGearButton) {
+      toggleDisplayNone(settingsPanel);
+    }
+  </script>
+</body>
+</html>
