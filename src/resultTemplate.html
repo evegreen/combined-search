@@ -21,10 +21,6 @@
     .MatchTable tr:nth-child(2n) {
       background-color: #e8edff;
     }
-    .MatchCount {
-      min-width: 40px;
-      text-align: center;
-    }
     .ExcludeButton {
       min-width: 40px;
       text-align: center;
@@ -89,7 +85,6 @@
   <script type="text/javascript">
     'use strict';
 
-    const matchStringsEnabled = $$MATCH_STRINGS_ENABLED$$;
     const excludeIcon = `$$EXCLUDE_ICON$$`;
     const undoIcon = `$$UNDO_ICON$$`;
     const arrowDownIcon = `$$ARROW_DOWN_ICON$$`;
@@ -123,7 +118,7 @@
       matchClassList.toggle(EXCLUDE_CLASSNAME, newExcludeState);
       const isExcluded = matchClassList.contains(EXCLUDE_CLASSNAME);
       excludeButtonElem.innerHTML = isExcluded ? undoIcon : excludeIcon;
-      if (matchStringsEnabled && !newExcludeState && !isFinalChange) {
+      if (!newExcludeState && !isFinalChange) {
         const file = getDatasetFileAttr(matchLineElem);
         const fileMatchLine = findParentFileMatchLine(file);
         if (isExcluded) {

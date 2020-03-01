@@ -1,5 +1,7 @@
 'use strict';
 
+// TODO: add "collapse all" results button
+
 const fs = require('fs');
 const path = require('path');
 const { escapeHtml } = require('./utils');
@@ -39,10 +41,8 @@ module.exports = function renderHtmlResult({
   searchResult,
   stats,
   absPathsMap,
-  isCombined = false
 }) {
   let result = template.replace('$$QUERY_PATTERNS_TITLE$$', queryPatterns);
-  result = result.replace('$$MATCH_STRINGS_ENABLED$$', !isCombined);
   result = result.replace('$$EXCLUDE_ICON$$', excludeIcon);
   result = result.replace('$$UNDO_ICON$$', undoIcon);
   result = result.replace('$$ARROW_DOWN_ICON$$', arrowDownIcon);
@@ -52,11 +52,7 @@ module.exports = function renderHtmlResult({
   const statsHtml = renderStats(stats);
   result = result.replace('$$STATS$$', statsHtml);
   let resultsHtml;
-  if (isCombined) {
-    resultsHtml = renderCombinedResults(searchResult, absPathsMap);
-  } else {
-    resultsHtml = renderResults(searchResult, absPathsMap, queryPatterns[0]);
-  }
+  resultsHtml = renderResults(searchResult, absPathsMap, queryPatterns);
   result = result.replace('$$MATCHES$$', resultsHtml);
 
   return result;
@@ -84,7 +80,7 @@ function renderStats(stats) {
   `;
 }
 
-function renderResults(searchResult, absPathsMap, queryPattern) {
+function renderResults(searchResult, absPathsMap, queryPatterns) {
   if (!searchResult) return '';
 
   let result = '';
@@ -103,9 +99,13 @@ function renderResults(searchResult, absPathsMap, queryPattern) {
       </tr>
     `;
     for (let [lineNumber, matchString] of Object.entries(matches)) {
+      // TODO: remove abstraction leak
+      if (lineNumber === 'differentMatchCount') continue;
       matchString = escapeHtml(matchString);
-      matchString = matchString.split(queryPattern)
-        .join(`<span class="Highlight">${queryPattern}</span>`);
+      queryPatterns.forEach(queryPattern => {
+        matchString = matchString.split(queryPattern)
+          .join(`<span class="Highlight">${queryPattern}</span>`);
+      });
       result += `
         <tr data-parent-file="${filePath}">
           <td onclick="openEditor('${absPath}', ${lineNumber});">
@@ -118,24 +118,6 @@ function renderResults(searchResult, absPathsMap, queryPattern) {
         </tr>
       `;
     }
-  }
-
-  return result;
-}
-
-function renderCombinedResults(combinedSearchResult, absPathsMap) {
-  let result = '';
-  for (let [filePath, matchCount] of Object.entries(combinedSearchResult)) {
-    const absPath = absPathsMap[filePath];
-    result += `
-      <tr>
-        <td onclick="openEditor('${absPath}');">${filePath}</td>
-        <td class="MatchCount" onclick="openEditor('${absPath}');">${matchCount}</td>
-        <td class="ExcludeButton" onclick="toggleMatchExclude(this);">
-          ${excludeIcon}
-        </td>
-      </tr>
-    `;
   }
 
   return result;

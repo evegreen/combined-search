@@ -3,10 +3,9 @@
 const spawn = require('child_process').spawn;
 const Promise = require('bluebird');
 
-module.exports = function rgSearch(ignoreCase, pattern, path, withoutLines = false) {
+module.exports = function rgSearch(ignoreCase, pattern, path) {
   return new Promise((resolve, reject) => {
-    let rgOptions = withoutLines ? ['--count'] : ['--line-number', '--heading']
-    rgOptions.push('--stats');
+    let rgOptions = ['--line-number', '--heading', '--stats'];
     // TODO: allow configure which patterns is regex, and which not
     rgOptions.push('--fixed-strings');
     if (ignoreCase) rgOptions.push('--ignore-case');
@@ -30,6 +29,8 @@ module.exports = function rgSearch(ignoreCase, pattern, path, withoutLines = fal
         console.error('Error: ripgrep package is not installed, please follow instructions from here: https://github.com/BurntSushi/ripgrep#installation');
         process.exit(1);
       }
+
+      reject(err);
     });
   });
 };

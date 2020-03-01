@@ -14,6 +14,7 @@ module.exports = function parseArgs() {
     console.log('  cs "Johny Mitchell|Pattern2"');
     console.log('  cs -d "^" "pattern1^pattern2"')
     console.log('  cs -i "pattern1|pattern2" someDirectory/');
+    console.log('  cs -s "new |delete "');
     console.log();
     console.log('If you has runned webpack-dev-server (or openEditorService), you may click on search result matches, your editor will open automatically');
   });
@@ -24,11 +25,12 @@ module.exports = function parseArgs() {
     .usage('[global options] "entries" [path]')
     .option('-d, --delimiter [value]', 'delimiter for each search entry', '|')
     .option('-i, --ignore-case', 'case-insensitive search')
+    .option('-s, --sort-different-matches', "sort by different matches count desc (for combined search)")
     // TODO: improvement:
-    // .option('-f', '--filter [n]', 'filter matches, when it did not score n matching points')
+    // .option('-f', '--filter [n]', 'filter matches, when it did not score n different matches count')
     .parse(process.argv);
 
-  const { delimiter, ignoreCase } = program;
+  const { delimiter, ignoreCase, sortDifferentMatches } = program;
   if (program.args.length === 1) {
     program.args.push('./');
   }
@@ -44,5 +46,11 @@ module.exports = function parseArgs() {
   // TODO: improvement: make possible use many search paths, like in ripgrep
   const searchPath = program.args[1];
 
-  return { inaccurateQuery, patterns, searchPath, ignoreCase };
+  return {
+    inaccurateQuery,
+    patterns,
+    searchPath,
+    ignoreCase,
+    sortByDiffMatchCountArg: sortDifferentMatches
+  };
 };

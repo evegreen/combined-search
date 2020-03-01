@@ -1,24 +1,5 @@
 'use strict';
 
-exports.parseWithoutLines = function parseWithoutLines(rgResult) {
-  if (!rgResult) throw new Error('rgResult is empty');
-
-  const matches = rgResult.split('\n');
-  const statsResult = matches.splice(matches.length - 5, 5);
-  const stats = parseStats(statsResult);
-  if (stats.matchedLines === 0) return { stats };
-
-  let result = {};
-  for (let match of matches) {
-    if (match === '') break; // end of rgResult, when --count argument used
-
-    const [filePath, matchCount] = match.split(':');
-    result[filePath] = Number(matchCount);
-  }
-
-  return { stats, result };
-};
-
 exports.parse = function parse(rgResult) {
   if (!rgResult) throw new Error('rgResult is empty');
 

@@ -6,11 +6,16 @@ const tmp = require('tmp');
 const open = require('open');
 const parseArgs = require('./argsParser');
 const rgCommand = require('./rgCommand');
-const { parse, parseWithoutLines } = require('./rgParser');
+const { parse } = require('./rgParser');
+const {
+  combineResults,
+  matchCountComparator,
+  differentMatchCountComparator
+} = require('./combiner');
 const renderHtmlResult = require('./renderer');
 const { sortObjectMap } = require('./utils');
 
-const { inaccurateQuery, patterns, searchPath, ignoreCase } = parseArgs();
+const { inaccurateQuery, patterns, searchPath, ignoreCase, sortByDiffMatchCountArg } = parseArgs();
 runSearch();
 
 async function runSearch() {
@@ -30,7 +35,7 @@ async function search() {
   let sortedResult = null;
   let absPathsMap = null;
   if (result) {
-    sortedResult = sortObjectMap(result, (a, b) => a.key.localeCompare(b.key));
+    sortedResult = sortObjectMap(result, matchCountComparator);
     absPathsMap = resolvePaths(sortedResult);
   }
 
@@ -44,44 +49,20 @@ async function search() {
 }
 
 async function searchCombined() {
-  const rgCommands = patterns.map(pattern => rgCommand(ignoreCase, pattern, searchPath, true));
+  const rgCommands = patterns.map(pattern => rgCommand(ignoreCase, pattern, searchPath));
   const rgResults = await Promise.all(rgCommands);
-  const resultsWithStats = rgResults.map(parseWithoutLines);
-  const { combinedResult, combinedStats } = combineSearchResults(resultsWithStats);
-  const sortedCombinedResult = sortObjectMap(combinedResult, (a, b) => b.value - a.value);
+  const resultsWithStats = rgResults.map(parse);
+  const { combinedResult, combinedStats } = combineResults(resultsWithStats);
+  const comparator = sortByDiffMatchCountArg ? differentMatchCountComparator : matchCountComparator;
+  const sortedCombinedResult = sortObjectMap(combinedResult, comparator);
   const absPathsMap = resolvePaths(sortedCombinedResult);
   return renderHtmlResult({
     queryPatterns: patterns,
     query: inaccurateQuery,
     searchResult: sortedCombinedResult,
     stats: combinedStats,
-    absPathsMap,
-    isCombined: true
+    absPathsMap
   });
-}
-
-function combineSearchResults(resultsWithStats) {
-  let combinedResult = {};
-  resultsWithStats.forEach(({ result }) => {
-    if (!result) return; // for empty search result
-
-    Object.keys(result).forEach(filePath => {
-      if (!combinedResult[filePath]) {
-        combinedResult[filePath] = 1;
-        return;
-      }
-
-      combinedResult[filePath]++;
-    });
-  });
-
-  const combinedStats = {
-    patternsCount: resultsWithStats.length,
-    matchedFiles: Object.keys(combinedResult).length,
-    filesSearched: resultsWithStats[0].stats.filesSearched
-  };
-
-  return { combinedResult, combinedStats };
 }
 
 function saveToTempFile(htmlResult) {
