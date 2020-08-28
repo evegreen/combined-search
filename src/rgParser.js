@@ -4,7 +4,7 @@ exports.parse = function parse(rgResult) {
   if (!rgResult) throw new Error('rgResult is empty');
 
   const lines = rgResult.split('\n');
-  const statsResult = lines.splice(lines.length - 5, 5);
+  const statsResult = getStatsResult(lines);
   const stats = parseStats(statsResult);
   if (stats.matchedLines === 0) return { stats };
 
@@ -32,6 +32,21 @@ exports.parse = function parse(rgResult) {
   }
 
   return { stats, result };
+}
+
+function getStatsResult(lines) {
+  let statsLinesCount = 0;
+  let emptyLineCount = 0;
+  for (let i = lines.length - 1; i >= 0; i--) {
+    statsLinesCount++;
+    const line = lines[i];
+    if (line === '') {
+      emptyLineCount++;
+    }
+    if (emptyLineCount === 2) {
+      return lines.splice(lines.length - statsLinesCount, statsLinesCount);
+    }
+  }
 }
 
 function parseStats(statsResult) {
