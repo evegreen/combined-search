@@ -44,7 +44,12 @@ function getStatsResult(lines) {
       emptyLineCount++;
     }
     if (emptyLineCount === 2) {
-      return lines.splice(lines.length - statsLinesCount, statsLinesCount);
+      return lines.splice(
+        // plus 1 for one empty line, that required by parse function
+        lines.length - statsLinesCount + 1,
+        // minus 2 for two empty lines
+        statsLinesCount - 2
+      );
     }
   }
 }
