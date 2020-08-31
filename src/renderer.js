@@ -103,8 +103,12 @@ function renderResults(searchResult, absPathsMap, queryPatterns) {
       if (lineNumber === 'differentMatchCount') continue;
       matchString = escapeHtml(matchString);
       queryPatterns.forEach(queryPattern => {
-        matchString = matchString.split(queryPattern)
-          .join(`<span class="Highlight">${queryPattern}</span>`);
+        const queryRegExp = new RegExp(queryPattern, 'gi');
+        const queryStartIndex = matchString.search(queryRegExp);
+        const queryEndIndex = queryStartIndex + queryPattern.length;
+        const originalQuery = matchString.slice(queryStartIndex, queryEndIndex);
+        const wrappedQuery = `<span class="Highlight">${originalQuery}</span>`;
+        matchString = matchString.replace(queryRegExp, wrappedQuery);
       });
       result += `
         <tr data-parent-file="${filePath}">
