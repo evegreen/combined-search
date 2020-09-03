@@ -44,7 +44,8 @@ async function search() {
     query: inaccurateQuery,
     searchResult: sortedResult,
     stats,
-    absPathsMap
+    absPathsMap,
+    ignoreCase
   });
 }
 
@@ -61,7 +62,8 @@ async function searchCombined() {
     query: inaccurateQuery,
     searchResult: sortedCombinedResult,
     stats: combinedStats,
-    absPathsMap
+    absPathsMap,
+    ignoreCase
   });
 }
 

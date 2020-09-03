@@ -41,6 +41,7 @@ module.exports = function renderHtmlResult({
   searchResult,
   stats,
   absPathsMap,
+  ignoreCase
 }) {
   let result = template.replace('$$QUERY_PATTERNS_TITLE$$', queryPatterns);
   result = result.replace('$$EXCLUDE_ICON$$', excludeIcon);
@@ -52,7 +53,7 @@ module.exports = function renderHtmlResult({
   const statsHtml = renderStats(stats);
   result = result.replace('$$STATS$$', statsHtml);
   let resultsHtml;
-  resultsHtml = renderResults(searchResult, absPathsMap, queryPatterns);
+  resultsHtml = renderResults(searchResult, absPathsMap, queryPatterns, ignoreCase);
   result = result.replace('$$MATCHES$$', resultsHtml);
 
   return result;
@@ -80,7 +81,7 @@ function renderStats(stats) {
   `;
 }
 
-function renderResults(searchResult, absPathsMap, queryPatterns) {
+function renderResults(searchResult, absPathsMap, queryPatterns, ignoreCase) {
   if (!searchResult) return '';
 
   let result = '';
@@ -103,12 +104,15 @@ function renderResults(searchResult, absPathsMap, queryPatterns) {
       if (lineNumber === 'differentMatchCount') continue;
       matchString = escapeHtml(matchString);
       queryPatterns.forEach(queryPattern => {
-        const queryRegExp = new RegExp(queryPattern, 'gi');
-        const queryStartIndex = matchString.search(queryRegExp);
-        const queryEndIndex = queryStartIndex + queryPattern.length;
-        const originalQuery = matchString.slice(queryStartIndex, queryEndIndex);
-        const wrappedQuery = `<span class="Highlight">${originalQuery}</span>`;
-        matchString = matchString.replace(queryRegExp, wrappedQuery);
+        const queryRegExp = new RegExp(escapeHtml(queryPattern), `g${ignoreCase ? 'i' : ''}`);
+        const queryMatches = matchString.matchAll(queryRegExp);
+        for (const [queryMatch] of queryMatches) {
+          const queryMatchIndex = matchString.search(new RegExp(queryMatch))
+          const matchStringStart = matchString.substr(0, queryMatchIndex);
+          const matchStringEnd = matchString.substr(queryMatchIndex + queryMatch.length, matchString.length);
+          const wrappedQuery = `<span class="Highlight">${queryMatch}</span>`
+          matchString = `${matchStringStart}${wrappedQuery}${matchStringEnd}`;
+        }
       });
       result += `
         <tr data-parent-file="${filePath}">
