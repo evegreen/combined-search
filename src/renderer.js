@@ -35,7 +35,7 @@ const arrowRightIcon = `
   </svg>
 `;
 
-exports.renderHtmlResult = function renderHtmlResult({
+module.exports = function renderHtmlResult({
   queryPatterns,
   query,
   searchResult,

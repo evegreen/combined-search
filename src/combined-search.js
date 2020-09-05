@@ -12,7 +12,7 @@ const {
   matchCountComparator,
   differentMatchCountComparator
 } = require('./combiner');
-const { renderHtmlResult } = require('./renderer');
+const renderHtmlResult = require('./renderer');
 const { sortObjectMap } = require('./utils');
 
 const { inaccurateQuery, patterns, searchPath, ignoreCase, sortByDiffMatchCountArg } = parseArgs();
