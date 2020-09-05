@@ -4,7 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { escapeHtml } = require('./utils');
+const highlightMatchString = require('./highlightString');
 
 const templatePath = path.join(__dirname, 'resultTemplate.html');
 const template = fs.readFileSync(templatePath, 'utf8');
@@ -102,25 +102,18 @@ function renderResults(searchResult, absPathsMap, queryPatterns, ignoreCase) {
     for (let [lineNumber, matchString] of Object.entries(matches)) {
       // TODO: remove abstraction leak
       if (lineNumber === 'differentMatchCount') continue;
-      matchString = escapeHtml(matchString);
-      queryPatterns.forEach(queryPattern => {
-        const queryRegExp = new RegExp(escapeHtml(queryPattern), `g${ignoreCase ? 'i' : ''}`);
-        const queryMatches = matchString.matchAll(queryRegExp);
-        for (const [queryMatch] of queryMatches) {
-          const queryMatchIndex = matchString.search(new RegExp(queryMatch))
-          const matchStringStart = matchString.substr(0, queryMatchIndex);
-          const matchStringEnd = matchString.substr(queryMatchIndex + queryMatch.length, matchString.length);
-          const wrappedQuery = `<span class="Highlight">${queryMatch}</span>`
-          matchString = `${matchStringStart}${wrappedQuery}${matchStringEnd}`;
-        }
-      });
+      const highlightedMatchString = highlightMatchString(
+        matchString,
+        queryPatterns,
+        ignoreCase
+      );
       result += `
         <tr data-parent-file="${filePath}">
           <td onclick="openEditor('${absPath}', ${lineNumber});">
             <code>${lineNumber}</code>
           </td>
           <td onclick="openEditor('${absPath}', ${lineNumber});">
-            <code>${matchString}</code>
+            <code>${highlightedMatchString}</code>
           </td>
           <td class="ExcludeButton" onclick="toggleMatchExclude(this);">${excludeIcon}</td>
         </tr>
