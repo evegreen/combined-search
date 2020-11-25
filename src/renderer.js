@@ -102,6 +102,7 @@ function renderResults(searchResult, absPathsMap, queryPatterns) {
       // TODO: remove abstraction leak
       if (lineNumber === 'differentMatchCount') continue;
       matchString = escapeHtml(matchString);
+      debugger;
       queryPatterns.forEach(queryPattern => {
         matchString = matchString.split(queryPattern)
           .join(`<span class="Highlight">${queryPattern}</span>`);
