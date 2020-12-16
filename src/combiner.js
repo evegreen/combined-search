@@ -10,17 +10,22 @@ exports.combineResults = function combineResults(resultsWithStats) {
         combinedResult[filePath].differentMatchCount = 1;
         return;
       }
-      combinedResult[filePath] = {
-        ...combinedResult[filePath],
-        ...entries
-      };
+      let fileResult = combinedResult[filePath];
+      for (let [ lineNumber, match ] of Object.entries(entries)) {
+        const { matchString, submatches } = match;
+        if (!fileResult[lineNumber]) {
+          fileResult[lineNumber] = match;
+          return;
+        }
+        fileResult[lineNumber].submatches = fileResult[lineNumber].submatches.concat(submatches);
+      }
+      //// check this counting
       combinedResult[filePath].differentMatchCount++;
     });
   });
   const combinedStats = {
     patternsCount: resultsWithStats.length,
-    matchedFiles: Object.keys(combinedResult).length,
-    filesSearched: resultsWithStats[0].stats.filesSearched
+    matchedFiles: Object.keys(combinedResult).length
   };
   return { combinedResult, combinedStats };
 };
