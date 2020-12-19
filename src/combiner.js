@@ -19,7 +19,6 @@ exports.combineResults = function combineResults(resultsWithStats) {
         }
         fileResult[lineNumber].submatches = fileResult[lineNumber].submatches.concat(submatches);
       }
-      //// check this counting
       combinedResult[filePath].differentMatchCount++;
     });
   });

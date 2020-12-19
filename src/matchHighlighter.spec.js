@@ -3,12 +3,16 @@
 const { assert } = require('chai');
 const { highlightString } = require('./matchHighlighter');
 
-// returns same submatches like rg --json command (only for non regex patterns)
+/**
+ * Returns same submatches like rg --json command (only for non regex patterns)
+ * @param {string} matchString - Source string for highlighting
+ * @param {string[]} patterns - Search patterns
+ */
 function evalNonRegexRgSubmatches(matchString, patterns) {
   let submatches = [];
   for (let pattern of patterns) {
     let patternIdx = -1;
-    let patternEndIdx = null;
+    let patternEndIdx = void 0;
     do {
       patternIdx = matchString.indexOf(pattern, patternEndIdx);
       if (patternIdx !== -1) {
