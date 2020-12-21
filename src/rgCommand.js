@@ -1,7 +1,5 @@
-'use strict';
-
-const spawn = require('child_process').spawn;
-const Promise = require('bluebird');
+import { spawn } from 'child_process';
+import Promise from 'bluebird';
 
 /**
  * mutable function
@@ -36,7 +34,7 @@ function handleRgJsonData(data, targetRgResult, targetStats) {
   });
 }
 
-exports.rgJsonCommand = function rgJsonCommand(ignoreCase, pattern, searchPath) {
+export function rgJsonCommand(ignoreCase, pattern, searchPath) {
   return new Promise((resolve, reject) => {
     let rgOptions = ['--json'];
     // TODO: allow configure which patterns is regex, and which not

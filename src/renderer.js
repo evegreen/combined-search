@@ -1,13 +1,12 @@
-'use strict';
+import fs from 'fs';
+import { highlightString } from './matchHighlighter.js';
 
 // TODO: add "collapse all" results button
 
-const fs = require('fs');
-const path = require('path');
-const { highlightString } = require('./matchHighlighter');
-
-const templatePath = path.join(__dirname, 'resultTemplate.html');
-const template = fs.readFileSync(templatePath, 'utf8');
+const template = fs.readFileSync(
+  new URL('./resultTemplate.html', import.meta.url),
+  'utf8'
+);
 const excludeIcon = `
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
     <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/>
@@ -35,7 +34,7 @@ const arrowRightIcon = `
   </svg>
 `;
 
-module.exports = function renderHtmlResult({
+export default function renderHtmlResult({
   queryPatterns,
   query,
   searchResult,

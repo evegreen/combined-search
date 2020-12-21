@@ -1,12 +1,9 @@
-'use strict';
-
-const { escapeHtml } = require('./utils');
+import { escapeHtml } from './utils.js';
 
 const OPEN_HL_SPAN = '<span class="Highlight">';
 const CLOSE_SPAN = '</span>';
 
-exports.highlightString = highlightString;
-function highlightString(matchString, submatches) {
+export function highlightString(matchString, submatches) {
   submatches.sort((a, b) => a.start - b.start);
   let sourceString = matchString;
   let resultString = '';

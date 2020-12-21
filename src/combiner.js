@@ -1,6 +1,4 @@
-'use strict';
-
-exports.combineResults = function combineResults(resultsWithStats) {
+export function combineResults(resultsWithStats) {
   let combinedResult = {};
   resultsWithStats.forEach(({ result }) => {
     if (!result) return; // for empty search result
@@ -15,7 +13,7 @@ exports.combineResults = function combineResults(resultsWithStats) {
         const { matchString, submatches } = match;
         if (!fileResult[lineNumber]) {
           fileResult[lineNumber] = match;
-          return;
+          continue;
         }
         fileResult[lineNumber].submatches = fileResult[lineNumber].submatches.concat(submatches);
       }
@@ -29,13 +27,12 @@ exports.combineResults = function combineResults(resultsWithStats) {
   return { combinedResult, combinedStats };
 };
 
-function matchCountComparator(a, b) {
+export function matchLinesCountComparator(a, b) {
   return Object.keys(b.value).length - Object.keys(a.value).length
 };
-exports.matchCountComparator = matchCountComparator;
 
-exports.differentMatchCountComparator = function differentMatchCountComparator(a, b) {
+export function differentMatchCountComparator(a, b) {
   const mainDiff = b.value.differentMatchCount - a.value.differentMatchCount;
   if (mainDiff !== 0) return mainDiff;
-  return matchCountComparator(a, b);
+  return matchLinesCountComparator(a, b);
 };

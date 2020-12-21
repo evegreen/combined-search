@@ -1,18 +1,16 @@
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const tmp = require('tmp');
-const open = require('open');
-const parseArgs = require('./argsParser');
-const { rgJsonCommand } = require('./rgCommand');
-const {
+import fs from 'fs';
+import path from 'path';
+import tmp from 'tmp';
+import open from 'open';
+import parseArgs from './argsParser.js';
+import { rgJsonCommand } from './rgCommand.js';
+import {
   combineResults,
-  matchCountComparator,
+  matchLinesCountComparator,
   differentMatchCountComparator
-} = require('./combiner');
-const renderHtmlResult = require('./renderer');
-const { sortObjectMap } = require('./utils');
+} from './combiner.js';
+import renderHtmlResult from './renderer.js';
+import { sortObjectMap } from './utils.js';
 
 const { inaccurateQuery, patterns, searchPath, ignoreCase, sortByDiffMatchCountArg } = parseArgs();
 runSearch();
@@ -33,7 +31,7 @@ async function search() {
   let sortedResult = null;
   let absPathsMap = null;
   if (result) {
-    sortedResult = sortObjectMap(result, matchCountComparator);
+    sortedResult = sortObjectMap(result, matchLinesCountComparator);
     absPathsMap = resolvePaths(sortedResult);
   }
   return renderHtmlResult({
@@ -49,7 +47,7 @@ async function searchCombined() {
   const rgCommands = patterns.map(pattern => rgJsonCommand(ignoreCase, pattern, searchPath));
   const resultsWithStats = await Promise.all(rgCommands);
   const { combinedResult, combinedStats } = combineResults(resultsWithStats);
-  const comparator = sortByDiffMatchCountArg ? differentMatchCountComparator : matchCountComparator;
+  const comparator = sortByDiffMatchCountArg ? differentMatchCountComparator : matchLinesCountComparator;
   const sortedCombinedResult = sortObjectMap(combinedResult, comparator);
   const absPathsMap = resolvePaths(sortedCombinedResult);
   return renderHtmlResult({
