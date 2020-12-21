@@ -1,12 +1,13 @@
-'use strict';
+import fs from 'fs';
+import program from 'commander';
+const packageJson = JSON.parse(
+  fs.readFileSync(
+    new URL('../package.json', import.meta.url),
+    'utf8'
+  )
+);
 
-const path = require('path');
-const program = require('commander');
-
-const packageJsonPath = path.join(__dirname, '../package.json');
-const packageJson = require(packageJsonPath);
-
-module.exports = function parseArgs() {
+export default function parseArgs() {
   program.on('--help', () => {
     console.log('');
     console.log('Examples:');
@@ -25,9 +26,7 @@ module.exports = function parseArgs() {
     .usage('[global options] "entries" [path]')
     .option('-d, --delimiter [value]', 'delimiter for each search entry', '|')
     .option('-i, --ignore-case', 'case-insensitive search')
-    .option('-s, --sort-different-matches', "sort by different matches count desc (for combined search)")
-    // TODO: improvement:
-    // .option('-f', '--filter [n]', 'filter matches, when it did not score n different matches count')
+    .option('-s, --sort-different-matches', 'sort by different matches count desc')
     .parse(process.argv);
 
   const { delimiter, ignoreCase, sortDifferentMatches } = program;

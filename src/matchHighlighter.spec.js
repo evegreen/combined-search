@@ -1,7 +1,6 @@
-'use strict';
-
-const { assert } = require('chai');
-const { highlightString } = require('./matchHighlighter');
+import chai from 'chai';
+import { highlightString } from './matchHighlighter.js';
+const { assert } = chai;
 
 /**
  * Returns same submatches like rg --json command (only for non regex patterns)

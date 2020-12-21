@@ -1,6 +1,4 @@
-'use strict';
-
-exports.sortObjectMap = function sortObjectMap(objectMap, comparator) {
+export function sortObjectMap(objectMap, comparator) {
   let sortable = [];
   for (let [key, value] of Object.entries(objectMap)) {
     sortable.push({ key, value });
@@ -13,7 +11,7 @@ exports.sortObjectMap = function sortObjectMap(objectMap, comparator) {
   }, {});
 };
 
-exports.escapeHtml = function escapeHtml(htmlString) {
+export function escapeHtml(htmlString) {
   return htmlString
     .split('&').join('&amp;')
     .split('"').join('&quot;')

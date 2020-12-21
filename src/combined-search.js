@@ -1,18 +1,16 @@
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const tmp = require('tmp');
-const open = require('open');
-const parseArgs = require('./argsParser');
-const { rgJsonCommand } = require('./rgCommand');
-const {
+import fs from 'fs';
+import path from 'path';
+import tmp from 'tmp';
+import open from 'open';
+import parseArgs from './argsParser.js';
+import { rgJsonCommand } from './rgCommand.js';
+import {
   combineResults,
   matchLinesCountComparator,
   differentMatchCountComparator
-} = require('./combiner');
-const renderHtmlResult = require('./renderer');
-const { sortObjectMap } = require('./utils');
+} from './combiner.js';
+import renderHtmlResult from './renderer.js';
+import { sortObjectMap } from './utils.js';
 
 const { inaccurateQuery, patterns, searchPath, ignoreCase, sortByDiffMatchCountArg } = parseArgs();
 runSearch();

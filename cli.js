@@ -1,5 +1,3 @@
 #!/usr/bin/env node
 
-'use strict';
-
-require('./src/combined-search');
+import './src/combined-search.js';

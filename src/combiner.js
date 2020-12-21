@@ -1,6 +1,4 @@
-'use strict';
-
-exports.combineResults = function combineResults(resultsWithStats) {
+export function combineResults(resultsWithStats) {
   let combinedResult = {};
   resultsWithStats.forEach(({ result }) => {
     if (!result) return; // for empty search result
@@ -29,12 +27,11 @@ exports.combineResults = function combineResults(resultsWithStats) {
   return { combinedResult, combinedStats };
 };
 
-exports.matchLinesCountComparator = matchLinesCountComparator;
-function matchLinesCountComparator(a, b) {
+export function matchLinesCountComparator(a, b) {
   return Object.keys(b.value).length - Object.keys(a.value).length
 };
 
-exports.differentMatchCountComparator = function differentMatchCountComparator(a, b) {
+export function differentMatchCountComparator(a, b) {
   const mainDiff = b.value.differentMatchCount - a.value.differentMatchCount;
   if (mainDiff !== 0) return mainDiff;
   return matchLinesCountComparator(a, b);

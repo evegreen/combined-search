@@ -1,0 +1,23 @@
+{
+  "include": [
+    "src/**/*"
+  ],
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "es2020",
+    "baseUrl": ".",
+    "allowJs": true,
+    "checkJs": true,
+    "moduleResolution": "node",
+    "alwaysStrict": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "types",
+    "removeComments": false,
+    "allowSyntheticDefaultImports": true,
+    "types": [
+      "node",
+      "mocha"
+    ]
+  }
+}
