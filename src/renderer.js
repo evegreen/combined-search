@@ -4,7 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { escapeHtml } = require('./utils');
+const { highlightString } = require('./matchHighlighter');
 
 const templatePath = path.join(__dirname, 'resultTemplate.html');
 const template = fs.readFileSync(templatePath, 'utf8');
@@ -64,25 +64,23 @@ function renderQuery(query) {
 
 function renderStats(stats) {
   if (stats.matchedFiles !== undefined) {
-    const { patternsCount, matchedFiles, filesSearched } = stats;
+    const { patternsCount, matchedFiles } = stats;
     return `
       <span class="Highlight">${patternsCount}</span> patterns searched,
       <span class="Highlight">${matchedFiles}</span> matched files,
-      <span class="Highlight">${filesSearched}</span> files searched
     `;
   }
 
-  const { matchedLines, filesContainedMatches, filesSearched } = stats;
+  const { matchedLines, filesContainedMatches, matches } = stats;
   return `
     <span class="Highlight">${filesContainedMatches}</span> files contained matches,
     <span class="Highlight">${matchedLines}</span> matched lines,
-    <span class="Highlight">${filesSearched}</span> files searched
+    <span class="Highlight">${matches}</span> matches
   `;
 }
 
 function renderResults(searchResult, absPathsMap, queryPatterns) {
   if (!searchResult) return '';
-
   let result = '';
   for (let [filePath, matches] of Object.entries(searchResult)) {
     const absPath = absPathsMap[filePath];
@@ -98,21 +96,18 @@ function renderResults(searchResult, absPathsMap, queryPatterns) {
         <td class="ExcludeButton" onclick="toggleFileExclude(this);">${excludeIcon}</td>
       </tr>
     `;
-    for (let [lineNumber, matchString] of Object.entries(matches)) {
+    for (let [lineNumber, { matchString, submatches } ] of Object.entries(matches)) {
       // TODO: remove abstraction leak
       if (lineNumber === 'differentMatchCount') continue;
-      matchString = escapeHtml(matchString);
-      queryPatterns.forEach(queryPattern => {
-        matchString = matchString.split(queryPattern)
-          .join(`<span class="Highlight">${queryPattern}</span>`);
-      });
+      // there is always at least one match, so escaping proceed into higglight algorhytm
+      const resultString = highlightString(matchString, submatches);
       result += `
         <tr data-parent-file="${filePath}">
           <td onclick="openEditor('${absPath}', ${lineNumber});">
             <code>${lineNumber}</code>
           </td>
           <td onclick="openEditor('${absPath}', ${lineNumber});">
-            <code>${matchString}</code>
+            <code>${resultString}</code>
           </td>
           <td class="ExcludeButton" onclick="toggleMatchExclude(this);">${excludeIcon}</td>
         </tr>

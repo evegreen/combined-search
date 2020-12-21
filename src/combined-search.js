@@ -5,8 +5,7 @@ const path = require('path');
 const tmp = require('tmp');
 const open = require('open');
 const parseArgs = require('./argsParser');
-const rgCommand = require('./rgCommand');
-const { parse } = require('./rgParser');
+const { rgJsonCommand } = require('./rgCommand');
 const {
   combineResults,
   matchCountComparator,
@@ -30,15 +29,13 @@ async function runSearch() {
 }
 
 async function search() {
-  const rgResult = await rgCommand(ignoreCase, patterns[0], searchPath);
-  const { result , stats } = parse(rgResult);
+  const { result, stats } = await rgJsonCommand(ignoreCase, patterns[0], searchPath);
   let sortedResult = null;
   let absPathsMap = null;
   if (result) {
     sortedResult = sortObjectMap(result, matchCountComparator);
     absPathsMap = resolvePaths(sortedResult);
   }
-
   return renderHtmlResult({
     queryPatterns: patterns,
     query: inaccurateQuery,
@@ -49,9 +46,8 @@ async function search() {
 }
 
 async function searchCombined() {
-  const rgCommands = patterns.map(pattern => rgCommand(ignoreCase, pattern, searchPath));
-  const rgResults = await Promise.all(rgCommands);
-  const resultsWithStats = rgResults.map(parse);
+  const rgCommands = patterns.map(pattern => rgJsonCommand(ignoreCase, pattern, searchPath));
+  const resultsWithStats = await Promise.all(rgCommands);
   const { combinedResult, combinedStats } = combineResults(resultsWithStats);
   const comparator = sortByDiffMatchCountArg ? differentMatchCountComparator : matchCountComparator;
   const sortedCombinedResult = sortObjectMap(combinedResult, comparator);
