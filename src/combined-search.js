@@ -8,7 +8,7 @@ const parseArgs = require('./argsParser');
 const { rgJsonCommand } = require('./rgCommand');
 const {
   combineResults,
-  matchCountComparator,
+  matchLinesCountComparator,
   differentMatchCountComparator
 } = require('./combiner');
 const renderHtmlResult = require('./renderer');
@@ -33,7 +33,7 @@ async function search() {
   let sortedResult = null;
   let absPathsMap = null;
   if (result) {
-    sortedResult = sortObjectMap(result, matchCountComparator);
+    sortedResult = sortObjectMap(result, matchLinesCountComparator);
     absPathsMap = resolvePaths(sortedResult);
   }
   return renderHtmlResult({
@@ -49,7 +49,7 @@ async function searchCombined() {
   const rgCommands = patterns.map(pattern => rgJsonCommand(ignoreCase, pattern, searchPath));
   const resultsWithStats = await Promise.all(rgCommands);
   const { combinedResult, combinedStats } = combineResults(resultsWithStats);
-  const comparator = sortByDiffMatchCountArg ? differentMatchCountComparator : matchCountComparator;
+  const comparator = sortByDiffMatchCountArg ? differentMatchCountComparator : matchLinesCountComparator;
   const sortedCombinedResult = sortObjectMap(combinedResult, comparator);
   const absPathsMap = resolvePaths(sortedCombinedResult);
   return renderHtmlResult({
