@@ -23,7 +23,9 @@
   },
   "bin": {
     "cs": "./cli.js",
-    "combined-search": "./cli.js"
+    "combined-search": "./cli.js",
+    "cs-oes": "./openEditorService.js",
+    "open-editor-service": "./openEditorService.js"
   },
   "author": "evegreen",
   "license": "MIT"

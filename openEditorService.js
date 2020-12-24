@@ -1,4 +1,4 @@
-'use strict';
+#!/usr/bin/env node
 
 /**
  *
@@ -14,10 +14,10 @@
  *
  */
 
-const http = require('http');
-const url = require('url');
-const querystring = require('querystring');
-const launchEditor = require('react-dev-utils/launchEditor');
+import http from 'http';
+import url from 'url';
+import querystring from 'querystring';
+import launchEditor from 'react-dev-utils/launchEditor.js';
 
 const port = process.argv[2] || 3000;
 const WDS_LIKE_URL = '/__open-stack-frame-in-editor';
