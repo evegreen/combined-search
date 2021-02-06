@@ -66,7 +66,7 @@ function renderStats(stats) {
     const { patternsCount, matchedFiles } = stats;
     return `
       <span class="Highlight">${patternsCount}</span> patterns searched,
-      <span class="Highlight">${matchedFiles}</span> matched files,
+      <span class="Highlight">${matchedFiles}</span> matched files
     `;
   }
 
