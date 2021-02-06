@@ -18,7 +18,8 @@ runSearch();
 async function runSearch() {
   try {
     const searchFn = patterns.length === 1 ? search : searchCombined;
-    const htmlResult = await searchFn();
+    const searchResults = await searchFn();
+    const htmlResult = renderHtmlResult(searchResults);
     const resultFilename = saveToTempFile(htmlResult);
     open(resultFilename);
   } catch (err) {
@@ -34,13 +35,13 @@ async function search() {
     sortedResult = sortObjectMap(result, matchLinesCountComparator);
     absPathsMap = resolvePaths(sortedResult);
   }
-  return renderHtmlResult({
+  return {
     queryPatterns: patterns,
     query: inaccurateQuery,
     searchResult: sortedResult,
     stats,
     absPathsMap
-  });
+  };
 }
 
 async function searchCombined() {
@@ -50,13 +51,13 @@ async function searchCombined() {
   const comparator = sortByDiffMatchCountArg ? differentMatchCountComparator : matchLinesCountComparator;
   const sortedCombinedResult = sortObjectMap(combinedResult, comparator);
   const absPathsMap = resolvePaths(sortedCombinedResult);
-  return renderHtmlResult({
+  return {
     queryPatterns: patterns,
     query: inaccurateQuery,
     searchResult: sortedCombinedResult,
     stats: combinedStats,
     absPathsMap
-  });
+  };
 }
 
 function saveToTempFile(htmlResult) {
