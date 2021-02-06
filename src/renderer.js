@@ -81,7 +81,7 @@ function renderStats(stats) {
 function renderResults(searchResult, absPathsMap, queryPatterns) {
   if (!searchResult) return '';
   let result = '';
-  for (let [filePath, matches] of Object.entries(searchResult)) {
+  for (let [ filePath, { entries } ] of Object.entries(searchResult)) {
     const absPath = absPathsMap[filePath];
     result += `
       <tr data-file="${filePath}">
@@ -95,10 +95,8 @@ function renderResults(searchResult, absPathsMap, queryPatterns) {
         <td class="ExcludeButton" onclick="toggleFileExclude(this);">${excludeIcon}</td>
       </tr>
     `;
-    for (let [lineNumber, { matchString, submatches } ] of Object.entries(matches)) {
-      // TODO: remove abstraction leak
-      if (lineNumber === 'differentMatchCount') continue;
-      // there is always at least one match, so escaping proceed into higglight algorhytm
+    for (let [ lineNumber, { matchString, submatches } ] of Object.entries(entries)) {
+      // there is always at least one match, so escaping proceed into highlight algorhytm
       const resultString = highlightString(matchString, submatches);
       result += `
         <tr data-parent-file="${filePath}">

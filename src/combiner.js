@@ -2,13 +2,14 @@ export function combineResults(resultsWithStats) {
   let combinedResult = {};
   resultsWithStats.forEach(({ result }) => {
     if (!result) return; // for empty search result
-    Object.entries(result).forEach(([filePath, entries]) => {
+    Object.entries(result).forEach(([filePath, { entries }]) => {
       if (!combinedResult[filePath]) {
-        combinedResult[filePath] = entries;
+        combinedResult[filePath] = {};
+        combinedResult[filePath].entries = entries;
         combinedResult[filePath].differentMatchCount = 1;
         return;
       }
-      let fileResult = combinedResult[filePath];
+      let fileResult = combinedResult[filePath].entries;
       for (let [ lineNumber, match ] of Object.entries(entries)) {
         const { matchString, submatches } = match;
         if (!fileResult[lineNumber]) {
@@ -28,7 +29,7 @@ export function combineResults(resultsWithStats) {
 };
 
 export function matchLinesCountComparator(a, b) {
-  return Object.keys(b.value).length - Object.keys(a.value).length
+  return Object.keys(b.value.entries).length - Object.keys(a.value.entries).length
 };
 
 export function differentMatchCountComparator(a, b) {

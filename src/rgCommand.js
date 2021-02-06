@@ -16,9 +16,9 @@ function handleRgJsonData(data, targetRgResult, targetStats) {
     if (type === 'match') {
       const filePath = path.text;
       if (!targetRgResult[filePath]) {
-        targetRgResult[filePath] = {};
+        targetRgResult[filePath] = { entries: {} };
       }
-      targetRgResult[filePath][lineNumber] = {
+      targetRgResult[filePath].entries[lineNumber] = {
         matchString: lines.text,
         submatches
       };
