@@ -51,7 +51,7 @@ export default function renderHtmlResult({
   const statsHtml = renderStats(stats);
   result = result.replace('$$STATS$$', statsHtml);
   let resultsHtml;
-  resultsHtml = renderResults(searchResult, absPathsMap, queryPatterns);
+  resultsHtml = renderResults(searchResult, absPathsMap);
   result = result.replace('$$MATCHES$$', resultsHtml);
 
   return result;
@@ -78,39 +78,46 @@ function renderStats(stats) {
   `;
 }
 
-function renderResults(searchResult, absPathsMap, queryPatterns) {
+function renderResults(searchResult, absPathsMap) {
   if (!searchResult) return '';
   let result = '';
   for (let [ filePath, { entries } ] of Object.entries(searchResult)) {
     const absPath = absPathsMap[filePath];
-    result += `
-      <tr data-file="${filePath}">
-        <td>
-          <span onClick="toggleCollapseMatchStrings(this);">${arrowDownIcon}</span>
-          <span class="Highlight" onclick="openEditor('${absPath}');">
-            <code>${filePath}</code>
-          </span>
-        </td>
-        <td onclick="openEditor('${absPath}');"></td>
-        <td class="ExcludeButton" onclick="toggleFileExclude(this);">${excludeIcon}</td>
-      </tr>
-    `;
+    result += renderFileEntry(filePath, absPath);
     for (let [ lineNumber, { matchString, submatches } ] of Object.entries(entries)) {
-      // there is always at least one match, so escaping proceed into highlight algorhytm
-      const resultString = highlightString(matchString, submatches);
-      result += `
-        <tr data-parent-file="${filePath}">
-          <td onclick="openEditor('${absPath}', ${lineNumber});">
-            <code>${lineNumber}</code>
-          </td>
-          <td onclick="openEditor('${absPath}', ${lineNumber});">
-            <code>${resultString}</code>
-          </td>
-          <td class="ExcludeButton" onclick="toggleMatchExclude(this);">${excludeIcon}</td>
-        </tr>
-      `;
+      result += renderMatchEntry(lineNumber, matchString, submatches, filePath, absPath);
     }
   }
-
   return result;
+}
+
+function renderFileEntry(filePath, absPath) {
+  return `
+    <tr data-file="${filePath}">
+      <td>
+        <span onClick="toggleCollapseMatchStrings(this);">${arrowDownIcon}</span>
+        <span class="Highlight" onclick="openEditor('${absPath}');">
+          <code>${filePath}</code>
+        </span>
+      </td>
+      <td onclick="openEditor('${absPath}');"></td>
+      <td class="ExcludeButton" onclick="toggleFileExclude(this);">${excludeIcon}</td>
+    </tr>
+  `;
+}
+
+function renderMatchEntry(lineNumber, matchString, submatches, filePath, absPath) {
+  // there is always at least one match, so escaping proceed into highlight algorhytm
+  const resultString = highlightString(matchString, submatches);
+  return `
+    <tr data-parent-file="${filePath}">
+      <td onclick="openEditor('${absPath}', ${lineNumber});">
+        <code>${lineNumber}</code>
+      </td>
+      <td onclick="openEditor('${absPath}', ${lineNumber});">
+        <code>${resultString}</code>
+      </td>
+      <td class="ExcludeButton" onclick="toggleMatchExclude(this);">${excludeIcon}</td>
+    </tr>
+  `
 }
