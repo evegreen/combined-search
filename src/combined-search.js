@@ -31,10 +31,8 @@ async function search() {
   const { result, stats } = await rgJsonCommand(ignoreCase, patterns[0], searchPath);
   let sortedResult = null;
   let absPathsMap = null;
-  if (result) {
-    sortedResult = sortObjectMap(result, matchLinesCountComparator);
-    absPathsMap = resolvePaths(sortedResult);
-  }
+  sortedResult = sortObjectMap(result, matchLinesCountComparator);
+  absPathsMap = resolvePaths(sortedResult);
   return {
     queryPatterns: patterns,
     query: inaccurateQuery,
