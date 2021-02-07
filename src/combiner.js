@@ -4,9 +4,7 @@ export function combineResults(resultsWithStats) {
     if (!result) return; // for empty search result
     Object.entries(result).forEach(([filePath, { entries }]) => {
       if (!combinedResult[filePath]) {
-        combinedResult[filePath] = {};
-        combinedResult[filePath].entries = entries;
-        combinedResult[filePath].differentMatchCount = 1;
+        combinedResult[filePath] = { entries, differentMatchCount: 1 };
         return;
       }
       let fileResult = combinedResult[filePath].entries;
