@@ -44,9 +44,7 @@
   </style>
 </head>
 <body>
-  <table class="MatchTable">
-    $$MATCHES$$
-  </table>
+  <div id="root"></div>
   <div class="SettingsButton" onclick="toggleSettings(this);">
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 488.189 488.189" style="enable-background:new 0 0 488.189 488.189;" xml:space="preserve">
       <g>
@@ -79,7 +77,67 @@
   <script type="text/javascript">
     'use strict';
 
+    //// THIS IS COPY FROM src/matchHighlighter.js and src/utils.js
+    //// REMOVE, WHEN BUNDLING DONE
+    function escapeHtml(htmlString) {
+      return htmlString
+        .split('&').join('&amp;')
+        .split('"').join('&quot;')
+        .split(`'`).join('&#39;')
+        .split('<').join('&lt;')
+        .split('>').join('&gt;');
+    };
+    const OPEN_HL_SPAN = '<span class="Highlight">';
+    const CLOSE_SPAN = '</span>';
+    function highlightString(matchString, submatches) {
+      submatches.sort((a, b) => a.start - b.start);
+      let sourceString = matchString;
+      let resultString = '';
+      matchString.substring(sourceString, submatches[0].start);
+      let offset = 0;
+      for (let i = 0; i < submatches.length; i++) {
+        const submatch = submatches[i];
+        const previous = sourceString.substring(0, submatch.start - offset);
+        const match = submatch.match.text;
+        const escapedPrevious = escapeHtml(previous);
+        const escapedMatch = OPEN_HL_SPAN + escapeHtml(match) + CLOSE_SPAN;
+        resultString += `${escapedPrevious}${escapedMatch}`;
+        sourceString = sourceString.substring(submatch.end - offset);
+        offset = matchString.length - sourceString.length;
+      }
+      resultString += escapeHtml(sourceString);
+      return resultString;
+    };
+    //// ^
+
     const INITIAL_STATE = `$$INITIAL_STATE$$`;
+
+    const excludeIcon = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/>
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+    `;
+    const undoIcon = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path d="M0 0h24v24H0z" fill="none"/>
+        <path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/>
+        <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+    `;
+    const arrowDownIcon = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+        <path fill="none" d="M0 0h24v24H0V0z"/>
+      </svg>
+    `;
+    const arrowRightIcon = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+        <path fill="none" d="M0 0h24v24H0V0z"/>
+      </svg>
+    `;
 
     function renderQueryTitle(query) {
       const queryTitle = document.createElement('div');
@@ -108,20 +166,70 @@
       statsElem.innerHTML = innerResult;
       return statsElem;
     }
+
+    function renderResults(searchResult, absPathsMap) {
+      const results = document.createElement('table');
+      results.className = 'MatchTable';
+      if (!searchResult) return results;
+      for (let [ filePath, { entries } ] of Object.entries(searchResult)) {
+        const absPath = absPathsMap[filePath];
+        const fileElem = renderFileEntry(filePath, absPath);
+        results.appendChild(fileElem);
+        for (let [ lineNumber, { matchString, submatches } ] of Object.entries(entries)) {
+          const matchElem = renderMatchEntry(lineNumber, matchString, submatches, filePath, absPath);
+          results.appendChild(matchElem);
+        }
+      }
+      return results;
+    }
+    function renderFileEntry(filePath, absPath) {
+      const file = document.createElement('tr');
+      file.dataset.file = filePath;
+      file.innerHTML = `
+        <td>
+          <span onClick="toggleCollapseMatchStrings(this);">${arrowDownIcon}</span>
+          <span class="Highlight" onclick="openEditor('${absPath}');">
+            <code>${filePath}</code>
+          </span>
+        </td>
+        <td onclick="openEditor('${absPath}');"></td>
+        <td class="ExcludeButton" onclick="toggleFileExclude(this);">${excludeIcon}</td>
+      `;
+      return file;
+    }
+    function renderMatchEntry(lineNumber, matchString, submatches, filePath, absPath) {
+      // there is always at least one match, so escaping proceed into highlight algorhytm
+      const resultString = highlightString(matchString, submatches);
+      const match = document.createElement('tr');
+      match.dataset.parentFile = filePath;
+      match.innerHTML = `
+        <td onclick="openEditor('${absPath}', ${lineNumber});">
+          <code>${lineNumber}</code>
+        </td>
+        <td onclick="openEditor('${absPath}', ${lineNumber});">
+          <code>${resultString}</code>
+        </td>
+        <td class="ExcludeButton" onclick="toggleMatchExclude(this);">${excludeIcon}</td>
+      `;
+      return match;
+    }
+
     function renderUi() {
       const state = JSON.parse(INITIAL_STATE);
-      const queryTitle = renderQueryTitle(state.query);
-      document.body.appendChild(queryTitle);
-      const stats = renderStats(state.stats);
-      document.body.appendChild(stats);
+      const { query, stats, searchResult, absPathsMap } = state;
+      const root = document.querySelector('#root');
+      const queryTitle = renderQueryTitle(query);
+      root.appendChild(queryTitle);
+      const statsElem = renderStats(stats);
+      root.appendChild(statsElem);
+      const resultsElem = renderResults(searchResult, absPathsMap);
+      root.appendChild(resultsElem);
     }
 
     renderUi();
 
-    const excludeIcon = `$$EXCLUDE_ICON$$`;
-    const undoIcon = `$$UNDO_ICON$$`;
-    const arrowDownIcon = `$$ARROW_DOWN_ICON$$`;
-    const arrowRightIcon = `$$ARROW_RIGHT_ICON$$`;
+
+
     const EXCLUDE_CLASSNAME = 'ExcludedMatch';
     const LOCAL_STORAGE_OPEN_EDITOR_PORT_KEY = 'openEditorServicePort';
     let openEditorServicePort = Number(localStorage.getItem(LOCAL_STORAGE_OPEN_EDITOR_PORT_KEY)) || 3000;
