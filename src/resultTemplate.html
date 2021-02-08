@@ -44,12 +44,6 @@
   </style>
 </head>
 <body>
-  <div class="QueryTitle">
-    $$QUERY_TITLE$$
-  </div>
-  <div class="Stats">
-    $$STATS$$
-  </div>
   <table class="MatchTable">
     $$MATCHES$$
   </table>
@@ -84,6 +78,45 @@
   </div>
   <script type="text/javascript">
     'use strict';
+
+    const INITIAL_STATE = `$$INITIAL_STATE$$`;
+
+    function renderQueryTitle(query) {
+      const queryTitle = document.createElement('div');
+      queryTitle.className = 'QueryTitle';
+      queryTitle.innerHTML = `cs <span class="Highlight">${query}</span>`;
+      return queryTitle;
+    }
+    function renderStats(stats) {
+      const statsElem = document.createElement('div');
+      statsElem.className = 'Stats';
+      let innerResult;
+      if (stats.matchedFiles !== undefined) {
+        const { patternsCount, matchedFiles } = stats;
+        innerResult = `
+          <span class="Highlight">${patternsCount}</span> patterns searched,
+          <span class="Highlight">${matchedFiles}</span> matched files
+        `;
+      } else {
+        const { matchedLines, filesContainedMatches, matches } = stats;
+        innerResult = `
+          <span class="Highlight">${filesContainedMatches}</span> files contained matches,
+          <span class="Highlight">${matchedLines}</span> matched lines,
+          <span class="Highlight">${matches}</span> matches
+        `;
+      }
+      statsElem.innerHTML = innerResult;
+      return statsElem;
+    }
+    function renderUi() {
+      const state = JSON.parse(INITIAL_STATE);
+      const queryTitle = renderQueryTitle(state.query);
+      document.body.appendChild(queryTitle);
+      const stats = renderStats(state.stats);
+      document.body.appendChild(stats);
+    }
+
+    renderUi();
 
     const excludeIcon = `$$EXCLUDE_ICON$$`;
     const undoIcon = `$$UNDO_ICON$$`;

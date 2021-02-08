@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { highlightString } from './matchHighlighter.js';
+import { escapeForJsTemplateLiteral } from './utils.js';
 
 // TODO: add "collapse all" results button
 
@@ -34,49 +35,28 @@ const arrowRightIcon = `
   </svg>
 `;
 
-export default function renderHtmlResult({
-  queryPatterns,
-  query,
-  searchResult,
-  stats,
-  absPathsMap,
-}) {
-  let result = template.replace('$$QUERY_PATTERNS_TITLE$$', queryPatterns);
+export default function renderHtmlResult(initialState) {
+  const {
+    queryPatterns,
+    query,
+    searchResult,
+    stats,
+    absPathsMap,
+  } = initialState;
+  let result = template.replace(
+    '$$INITIAL_STATE$$',
+    escapeForJsTemplateLiteral(JSON.stringify(initialState))
+  );
+  result = result.replace('$$QUERY_PATTERNS_TITLE$$', queryPatterns);
   result = result.replace('$$EXCLUDE_ICON$$', excludeIcon);
   result = result.replace('$$UNDO_ICON$$', undoIcon);
   result = result.replace('$$ARROW_DOWN_ICON$$', arrowDownIcon);
   result = result.replace('$$ARROW_RIGHT_ICON$$', arrowRightIcon);
-  const queryHtml = renderQuery(query);
-  result = result.replace('$$QUERY_TITLE$$', queryHtml);
-  const statsHtml = renderStats(stats);
-  result = result.replace('$$STATS$$', statsHtml);
   let resultsHtml;
   resultsHtml = renderResults(searchResult, absPathsMap);
   result = result.replace('$$MATCHES$$', resultsHtml);
-
   return result;
 };
-
-function renderQuery(query) {
-  return `cs <span class="Highlight">${query}</span>`;
-}
-
-function renderStats(stats) {
-  if (stats.matchedFiles !== undefined) {
-    const { patternsCount, matchedFiles } = stats;
-    return `
-      <span class="Highlight">${patternsCount}</span> patterns searched,
-      <span class="Highlight">${matchedFiles}</span> matched files
-    `;
-  }
-
-  const { matchedLines, filesContainedMatches, matches } = stats;
-  return `
-    <span class="Highlight">${filesContainedMatches}</span> files contained matches,
-    <span class="Highlight">${matchedLines}</span> matched lines,
-    <span class="Highlight">${matches}</span> matches
-  `;
-}
 
 function renderResults(searchResult, absPathsMap) {
   if (!searchResult) return '';

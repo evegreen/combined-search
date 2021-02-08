@@ -19,3 +19,11 @@ export function escapeHtml(htmlString) {
     .split('<').join('&lt;')
     .split('>').join('&gt;');
 };
+
+export function escapeForJsTemplateLiteral(str) {
+  return str
+    .split('\\').join('\\\\')
+    .split('`').join('\\`')
+    .split('${').join('\\$\\{')
+    .split('}').join('\\}');
+};
