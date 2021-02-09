@@ -15,11 +15,14 @@
     "@types/mocha": "8.2.0",
     "@types/node": "14.14.14",
     "chai": "4.2.0",
-    "mocha": "8.2.1"
+    "mocha": "8.2.1",
+    "rollup": "2.38.5"
   },
   "scripts": {
     "test": "NODE_ENV=test mocha \"src/**/*.spec.js\"",
-    "test-debug": "NODE_ENV=test node --inspect-brk ./node_modules/.bin/_mocha \"src/**/*.spec.js\""
+    "test-debug": "NODE_ENV=test node --inspect-brk ./node_modules/.bin/_mocha \"src/**/*.spec.js\"",
+    "postinstall": "npm run build-ui",
+    "build-ui": "node scripts/buildUi.js"
   },
   "bin": {
     "cs": "./cli.js",
