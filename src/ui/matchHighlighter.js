@@ -1,4 +1,4 @@
-import { escapeHtml } from './utils.js';
+import { escapeHtml } from '../utils.js';
 
 const OPEN_HL_SPAN = '<span class="Highlight">';
 const CLOSE_SPAN = '</span>';

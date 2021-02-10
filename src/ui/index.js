@@ -1,6 +1,8 @@
 import renderQueryTitle from './queryTitleView';
 import renderStats from './statsView';
-import renderResults from './resultsView';
+import renderResultsContainer from './resultsContainer';
+import EditorService from './EditorService';
+import State from './State';
 import {
   excludeIcon,
   undoIcon,
@@ -11,14 +13,15 @@ import {
 const INITIAL_STATE = `$$INITIAL_STATE$$`;
 
 function renderUi() {
-  const state = JSON.parse(INITIAL_STATE);
-  const { query, stats, searchResult, absPathsMap } = state;
+  const state = new State(INITIAL_STATE);
+  const { query, stats, absPathsMap, files } = state;
   const root = document.querySelector('#root');
   const queryTitle = renderQueryTitle(query);
   root.appendChild(queryTitle);
   const statsElem = renderStats(stats);
   root.appendChild(statsElem);
-  const resultsElem = renderResults(searchResult, absPathsMap);
+  const editorService = new EditorService(absPathsMap);
+  const resultsElem = renderResultsContainer(files, editorService);
   root.appendChild(resultsElem);
 }
 
@@ -32,18 +35,6 @@ let openEditorServicePort = Number(localStorage.getItem(LOCAL_STORAGE_OPEN_EDITO
 document.querySelector('#port').value = openEditorServicePort;
 const settingsPanel = document.querySelector('.SettingsPanel');
 toggleDisplayNone(settingsPanel);
-function openEditor(absPath, lineNumber = 1) {
-  const encodedAbsPath = encodeURIComponent(absPath);
-  const url = `http://localhost:${openEditorServicePort}/__open-stack-frame-in-editor?fileName=${encodedAbsPath}&lineNumber=${lineNumber}`;
-  const xhr = new XMLHttpRequest();
-  try {
-    xhr.open('GET', url, false);
-    xhr.send(null);
-  } catch (err) {
-    // do nothing, because WDS (react-dev-utils editor opener)
-    // will not respond anything
-  }
-}
 function handleChangeOpenEditorPort(input) {
   const newPort = Number(input.value);
   openEditorServicePort = newPort;
