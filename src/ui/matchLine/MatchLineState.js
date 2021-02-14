@@ -1,18 +1,19 @@
-export default class MatchLineState {
+import BaseState from '../BaseState';
+
+export default class MatchLineState extends BaseState {
   constructor(lineNumber, matchString, submatches) {
+    super();
     this.lineNumber = lineNumber;
     this.matchString = matchString;
     this.submatches = submatches;
     this._isExcluded = false;
-    this._changeHandler = null;
   }
 
-  setChangeHandler(fn) {
-    this._changeHandler = fn;
+  get isExcluded() {
+    return this._isExcluded;
   }
-
-  toggleExclude() {
-    this._isExcluded = !this._isExcluded;
-    this._changeHandler();
+  set isExcluded(excluded) {
+    this._isExcluded = excluded;
+    this.autoNotify();
   }
 }

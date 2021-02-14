@@ -27,3 +27,17 @@ export function escapeForJsTemplateLiteral(str) {
     .split('${').join('\\$\\{')
     .split('}').join('\\}');
 };
+
+export function clearAllChildren(parentElem) {
+  while (parentElem.firstChild) {
+    parentElem.removeChild(parentElem.lastChild);
+  }
+}
+
+export function clearElems(elems) {
+  if (!elems || elems.length === 0) return;
+  elems.forEach(elem => {
+    if (!elem) return;
+    elem.parentNode.removeChild(elem);
+  });
+}

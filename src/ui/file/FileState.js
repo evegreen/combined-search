@@ -1,22 +1,26 @@
-export default class FileState {
+import BaseState from '../BaseState';
+
+export default class FileState extends BaseState {
   constructor(filePath) {
+    super();
     this.filePath = filePath;
     this._isExcluded = false;
     this._isCollapsed = false;
-    this._changeHandler = null;
   }
 
-  setChangeHandler(fn) {
-    this._changeHandler = fn;
+  get isExcluded() {
+    return this._isExcluded;
+  }
+  set isExcluded(excluded) {
+    this._isExcluded = excluded;
+    this.autoNotify();
   }
 
-  toggleExclude() {
-    this._isExcluded = !this._isExcluded;
-    this._changeHandler();
+  get isCollapsed() {
+    return this._isCollapsed;
   }
-
-  toggleCollapse() {
-    this._isCollapsed = !this._isCollapsed;
-    this._changeHandler();
+  set isCollapsed(collapsed) {
+    this._isCollapsed = collapsed;
+    this.autoNotify();
   }
 }
