@@ -1,8 +1,6 @@
 import { clearElems } from '../../utils';
 import { excludeIcon, arrowDownIcon, arrowRightIcon } from '../icons';
 
-//// optimize render calls
-
 function mapFileStateToProps(fileState) {
   return {
     isFileExcluded: fileState.isExcluded,

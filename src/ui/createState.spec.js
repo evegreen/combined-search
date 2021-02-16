@@ -2,7 +2,7 @@ import chai from 'chai';
 import createState from './createState.js';
 const { assert } = chai;
 
-describe('createState', () => {
+describe('createState instance', () => {
   it('should auto notify subscribers', () => {
     const carState = createState({ fuel: 35, engineSpeed: 3000 });
     let subscriberCalled = false;
@@ -20,11 +20,25 @@ describe('createState', () => {
     carState.engineSpeed = 4000;
     assert.equal(subscriberCalled, true);
   });
+  it('should stop and resume auto notification after notification enabled', () => {
+    const carState = createState({ fuel: 35, engineSpeed: 3000 });
+    let subscriberCalledCount = 0;
+    carState.subscribe(() => { subscriberCalledCount++; });
+    carState.preventAutoNotification();
+    carState.fuel = 34;
+    carState.engineSpeed = 4000;
+    assert.equal(subscriberCalledCount, 0);
+    carState.enableAutoNotification();
+    assert.equal(subscriberCalledCount, 0);
+    carState.fuel = 33;
+    carState.engineSpeed = 4500;
+    assert.equal(subscriberCalledCount, 2);
+  });
   it('should stop and resume auto notification after manual notify called', () => {
     const carState = createState({ fuel: 35, engineSpeed: 3000 });
     let subscriberCalledCount = 0;
     carState.subscribe(() => { subscriberCalledCount++; });
-    carState.preventAutoNotify();
+    carState.preventAutoNotification();
     carState.fuel = 34;
     carState.engineSpeed = 4000;
     assert.equal(subscriberCalledCount, 0);
@@ -33,6 +47,29 @@ describe('createState', () => {
     carState.fuel = 33;
     carState.engineSpeed = 4500;
     assert.equal(subscriberCalledCount, 3);
+  });
+  it('should not auto notify subscriber, when same value setted', () => {
+    const carState = createState({ fuel: 35, engineSpeed: 3000 });
+    let subscriberCalled = false;
+    carState.subscribe(() => { subscriberCalled = true; });
+    carState.fuel = 35; // try set same value
+    assert.equal(subscriberCalled, false);
+  });
+  it('should manual notify only specified field subscriber', () => {
+    const carState = createState({ fuel: 35, engineSpeed: 3000 });
+    let fuelSubscriberCalled = false;
+    let engineSubscriberCalled = false;
+    carState.subscribe(
+      () => { fuelSubscriberCalled = true; },
+      state => state.fuel
+    );
+    carState.subscribe(
+      () => { engineSubscriberCalled = true; },
+      state => state.engineSpeed
+    );
+    carState.notify('fuel');
+    assert.equal(fuelSubscriberCalled, true);
+    assert.equal(engineSubscriberCalled, false);
   });
   it('should not allow use reserved keywords for state field names', () => {
     assert.throws(

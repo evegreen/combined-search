@@ -2,10 +2,11 @@ function validateKeyName(keyName) {
   switch (keyName) {
     case 'subscribe':
     case 'notify':
-    case 'preventAutoNotify':
+    case 'preventAutoNotification':
+    case 'enableAutoNotification':
     case 'autoNotify':
       throw new Error(
-        'Cannot create state with reserved keywords in fields (subscribe, notify, preventAutoNotify, autoNotify)'
+        'Cannot create state with reserved keywords in fields (subscribe, notify, preventAutoNotification, enableAutoNotification, autoNotify(internal field))'
       );
   }
 }
@@ -38,7 +39,7 @@ export default function createState(initObj) {
 
   /** @param {string} [changedFieldName] */
   const notify = (changedFieldName) => {
-    isAutoNotifyPrevented = false;
+    enableAutoNotification();
     subscriptions.forEach(({ cb, subFields }) => {
       if (!subFields || !changedFieldName) {
         cb();
@@ -50,8 +51,12 @@ export default function createState(initObj) {
     });
   };
 
-  const preventAutoNotify = () => {
+  const preventAutoNotification = () => {
     isAutoNotifyPrevented = true;
+  };
+
+  const enableAutoNotification = () => {
+    isAutoNotifyPrevented = false;
   };
 
   /** @param {string} fieldName */
@@ -64,7 +69,8 @@ export default function createState(initObj) {
   let resultState = {
     subscribe,
     notify,
-    preventAutoNotify
+    preventAutoNotification,
+    enableAutoNotification
   };
   for (let [ key, value ] of Object.entries(initObj)) {
     validateKeyName(key);
@@ -77,6 +83,9 @@ export default function createState(initObj) {
         return innerState[key];
       },
       set: (newValue) => {
+        if (newValue === innerState[key]) {
+          return;
+        }
         innerState[key] = newValue;
         autoNotify(key);
       }

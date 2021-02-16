@@ -2,8 +2,6 @@ import { clearElems } from '../../utils';
 import { highlightString } from '../matchHighlighter';
 import { excludeIcon } from '../icons';
 
-//// optimize render calls
-
 function mapFileStateToProp(fileState) {
   return fileState.isCollapsed;
 }

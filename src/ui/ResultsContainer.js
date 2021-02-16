@@ -40,15 +40,20 @@ export default class ResultsContainer {
   }
 
   _handleFileExcludeToggle(fileState, matchLineStates) {
+    fileState.preventAutoNotification();
+    matchLineStates.forEach(mls => mls.preventAutoNotification());
     fileState.isExcluded = !fileState.isExcluded;
     if (!fileState.isExcluded) {
       // include
       matchLineStates.forEach(matchLine => { matchLine.isExcluded = false; });
-      return;
+      fileState.notify('isExcluded');
+    } else {
+      // exclude
+      matchLineStates.forEach(matchLine => { matchLine.isExcluded = true; });
+      fileState.isCollapsed = true;
+      fileState.notify();
     }
-    // exclude
-    matchLineStates.forEach(matchLine => { matchLine.isExcluded = true; });
-    fileState.isCollapsed = true;
+    matchLineStates.forEach(mls => mls.enableAutoNotification());
   }
 
   _handleMatchLineExcludeToggle(matchLineState, fileState, boundMatchLineStates) {
