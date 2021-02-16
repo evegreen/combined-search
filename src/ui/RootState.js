@@ -1,20 +1,23 @@
-import FileState from './file/FileState';
-import MatchLineState from './matchLine/MatchLineState';
+import createState from './createState';
 
 // TODO: implement state serialization
 
 function deserializeFiles(searchResults) {
-  return Object.entries(searchResults).map(
-    ([filePath, { entries }]) => ({
-      file: new FileState(filePath),
-      matchLines: deserializeMatchLines(entries)
-    })
-  );
+  return Object.entries(searchResults).map(([filePath, { entries }]) => ({
+    file: createState({ filePath, isExcluded: false, isCollapsed: false }),
+    matchLines: deserializeMatchLines(entries),
+  }));
 }
 
 function deserializeMatchLines(macthLineEntries) {
   return Object.entries(macthLineEntries).map(
-    ([lineNumber, { matchString, submatches }]) => new MatchLineState(lineNumber, matchString, submatches)
+    ([lineNumber, { matchString, submatches }]) =>
+      createState({
+        lineNumber,
+        matchString,
+        submatches,
+        isExcluded: false,
+      })
   );
 }
 

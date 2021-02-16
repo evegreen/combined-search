@@ -3,6 +3,13 @@ import { excludeIcon, arrowDownIcon, arrowRightIcon } from '../icons';
 
 //// optimize render calls
 
+function mapFileStateToProps(fileState) {
+  return {
+    isFileExcluded: fileState.isExcluded,
+    isFileCollapsed: fileState.isCollapsed
+  };
+}
+
 export default class FileView {
   constructor({ fileState, handleClick, handleExcludeToggle }) {
     this._anchorNode = document.createComment(FileView.prototype.constructor.name);
@@ -18,18 +25,19 @@ export default class FileView {
 
   mountTo(parentNode) {
     parentNode.appendChild(this._anchorNode);
-    this._state.subscribe(() => this.render());
+    this._state.subscribe(() => this.render(), mapFileStateToProps);
     this.render();
   }
 
   render() {
-    const { filePath, isExcluded, isCollapsed } = this._state;
+    const { isFileExcluded, isFileCollapsed } = mapFileStateToProps(this._state);
+    const { filePath } = this._state;
     const file = document.createElement('tr');
-    if (isExcluded) file.className = 'ExcludedMatch';
+    if (isFileExcluded) file.className = 'ExcludedMatch';
     const fakeSecondColumn = document.createElement('td');
     fakeSecondColumn.onclick = this._handleClick;
     file.append(
-      this.renderCollapseFilePathColumn(filePath, isCollapsed),
+      this.renderCollapseFilePathColumn(filePath, isFileCollapsed),
       fakeSecondColumn,
       this.renderExcludeButtonColumn()
     );

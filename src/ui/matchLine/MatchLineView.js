@@ -4,6 +4,14 @@ import { excludeIcon } from '../icons';
 
 //// optimize render calls
 
+function mapFileStateToProp(fileState) {
+  return fileState.isCollapsed;
+}
+
+function mapMatchLineStateToProp(matchLineState) {
+  return matchLineState.isExcluded;
+}
+
 export default class MatchLineView {
   constructor({matchLineState, fileState, handleClick, handleExcludeToggle}) {
     this._anchorNode = document.createComment(MatchLineView.prototype.constructor.name);
@@ -20,21 +28,23 @@ export default class MatchLineView {
 
   mountTo(parentNode) {
     parentNode.appendChild(this._anchorNode);
-    this._matchLineState.subscribe(() => this.render());
-    this._fileState.subscribe(() => this.render());
+    this._matchLineState.subscribe(() => this.render(), mapMatchLineStateToProp);
+    // subscribe only on used fields
+    this._fileState.subscribe(() => this.render(), mapFileStateToProp);
     this.render();
   }
 
   render() {
-    const { isCollapsed } = this._fileState;
-    const { lineNumber, isExcluded } = this._matchLineState;
-    if (isCollapsed) {
+    const isFileCollapsed = mapFileStateToProp(this._fileState);
+    const isMatchLineExcluded = mapMatchLineStateToProp(this._matchLineState);
+    const { lineNumber } = this._matchLineState;
+    if (isFileCollapsed) {
       clearElems([ this._prevMatchElem ]);
       this._prevMatchElem = null;
       return;
     }
     const match = document.createElement('tr');
-    if (isExcluded) match.className = 'ExcludedMatch';
+    if (isMatchLineExcluded) match.className = 'ExcludedMatch';
     match.append(
       this.renderLieNumberColumn(lineNumber),
       this.renderMatchStringColumn(),
