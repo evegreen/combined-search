@@ -75,7 +75,7 @@ describe('createState instance', () => {
     assert.throws(
       () => { createState({ fuel: 35, notify: 'some value' }); },
       Error,
-      'Cannot create state with reserved keywords in fields (subscribe, notify, preventAutoNotify, autoNotify)'
+      'Cannot create state with reserved keywords in fields (subscribe, notify, preventAutoNotification, enableAutoNotification, autoNotify(internal field))'
     );
   });
 });

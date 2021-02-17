@@ -47,13 +47,14 @@ export default class ResultsContainer {
       // include
       matchLineStates.forEach(matchLine => { matchLine.isExcluded = false; });
       fileState.notify('isExcluded');
+      matchLineStates.forEach(mls => mls.notify('isExcluded'));
     } else {
       // exclude
       matchLineStates.forEach(matchLine => { matchLine.isExcluded = true; });
       fileState.isCollapsed = true;
       fileState.notify();
+      matchLineStates.forEach(mls => mls.enableAutoNotification());
     }
-    matchLineStates.forEach(mls => mls.enableAutoNotification());
   }
 
   _handleMatchLineExcludeToggle(matchLineState, fileState, boundMatchLineStates) {
