@@ -3,6 +3,25 @@ import createState from './createState.js';
 const { assert } = chai;
 
 describe('createState instance', () => {
+  describe('.update({...})', () => {
+    it('should auto notify only updated fields (except same value setted)', () => {
+      const carState = createState({ fuel: 35, engineSpeed: 3000, oilLevel: 50 });
+      let fuelSubscriber = 0;
+      let engineSubscriber = 0;
+      let oilSubscriber = 0;
+      carState.subscribe(() => { fuelSubscriber++; }, cs => cs.fuel);
+      carState.subscribe(() => { engineSubscriber++; }, cs => cs.engineSpeed);
+      carState.subscribe(() => { oilSubscriber++; }, cs => cs.oilLevel);
+      carState.update({ fuel: 34, oilLevel: 50 });
+      assert.equal(fuelSubscriber, 1);
+      assert.equal(engineSubscriber, 0);
+      assert.equal(oilSubscriber, 0);
+      carState.update({ engineSpeed: 5000, oilLevel: 49 });
+      assert.equal(fuelSubscriber, 1);
+      assert.equal(engineSubscriber, 1);
+      assert.equal(oilSubscriber, 1);
+    });
+  });
   it('should auto notify subscribers', () => {
     const carState = createState({ fuel: 35, engineSpeed: 3000 });
     let subscriberCalled = false;
@@ -12,9 +31,11 @@ describe('createState instance', () => {
   });
   it('should auto notify only when subscribed field change', () => {
     const carState = createState({ fuel: 35, engineSpeed: 3000 });
-    const mapStateToProp = carState => carState.engineSpeed;
     let subscriberCalled = false;
-    carState.subscribe(() => { subscriberCalled = true; }, mapStateToProp);
+    carState.subscribe(
+      () => { subscriberCalled = true; },
+      carState => carState.engineSpeed
+    );
     carState.fuel = 34;
     assert.equal(subscriberCalled, false);
     carState.engineSpeed = 4000;
@@ -75,7 +96,7 @@ describe('createState instance', () => {
     assert.throws(
       () => { createState({ fuel: 35, notify: 'some value' }); },
       Error,
-      'Cannot create state with reserved keywords in fields (subscribe, notify, preventAutoNotification, enableAutoNotification, autoNotify(internal field))'
+      'Cannot create state with reserved keywords in fields (subscribe, notify, update preventAutoNotification, enableAutoNotification, autoNotify(internal field))'
     );
   });
 });

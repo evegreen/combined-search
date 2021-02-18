@@ -2,11 +2,12 @@ function validateKeyName(keyName) {
   switch (keyName) {
     case 'subscribe':
     case 'notify':
+    case 'update':
     case 'preventAutoNotification':
     case 'enableAutoNotification':
     case 'autoNotify':
       throw new Error(
-        'Cannot create state with reserved keywords in fields (subscribe, notify, preventAutoNotification, enableAutoNotification, autoNotify(internal field))'
+        'Cannot create state with reserved keywords in fields (subscribe, notify, update preventAutoNotification, enableAutoNotification, autoNotify(internal field))'
       );
   }
 }
@@ -37,15 +38,23 @@ export default function createState(initObj) {
     subscriptions.push({ cb });
   };
 
-  /** @param {string} [changedFieldName] */
-  const notify = (changedFieldName) => {
+  /** @param {string | string[]} [changedFieldOrFields] */
+  const notify = (changedFieldOrFields) => {
     enableAutoNotification();
+    if (!changedFieldOrFields || changedFieldOrFields.length === 0) {
+      subscriptions.forEach(s => s.cb());
+      return;
+    }
+    const changedFields =
+      typeof changedFieldOrFields === 'string'
+        ? [changedFieldOrFields]
+        : changedFieldOrFields;
     subscriptions.forEach(({ cb, subFields }) => {
-      if (!subFields || !changedFieldName) {
+      if (!subFields) {
         cb();
         return;
       }
-      if (subFields.includes(changedFieldName)) {
+      if (subFields.some(sf => changedFields.includes(sf))) {
         cb();
       }
     });
@@ -59,16 +68,28 @@ export default function createState(initObj) {
     isAutoNotifyPrevented = false;
   };
 
-  /** @param {string} fieldName */
-  const autoNotify = (fieldName) => {
+  /** @param {string | string[]} fieldNameOrFieldNames */
+  const autoNotify = (fieldNameOrFieldNames) => {
     if (isAutoNotifyPrevented) return;
-    notify(fieldName);
+    notify(fieldNameOrFieldNames);
+  };
+
+  /** @param {Object<string, any>} updaterObj */
+  const update = (updaterObj) => {
+    let changedFields = [];
+    for (let [ key, newValue ] of Object.entries(updaterObj)) {
+      if (newValue === innerState[key]) continue;
+      innerState[key] = newValue;
+      changedFields.push(key);
+    }
+    autoNotify(changedFields);
   };
 
   // construction
   let resultState = {
     subscribe,
     notify,
+    update,
     preventAutoNotification,
     enableAutoNotification
   };

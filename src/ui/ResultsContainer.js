@@ -34,39 +34,44 @@ export default class ResultsContainer {
     return new MatchLineView({
       matchLineState: matchLine,
       fileState: file,
-      handleClick: () => this._handleOpenEditor(file.filePath, matchLine.lineNumber),
-      handleExcludeToggle: () => this._handleMatchLineExcludeToggle(matchLine, file, boundMatchLines)
+      handleClick: () =>
+        this._handleOpenEditor(file.filePath, matchLine.lineNumber),
+      handleExcludeToggle: () =>
+        this._handleMatchLineExcludeToggle(matchLine, file, boundMatchLines)
     });
   }
 
   _handleFileExcludeToggle(fileState, matchLineStates) {
-    fileState.preventAutoNotification();
-    matchLineStates.forEach(mls => mls.preventAutoNotification());
-    fileState.isExcluded = !fileState.isExcluded;
-    if (!fileState.isExcluded) {
-      // include
-      matchLineStates.forEach(matchLine => { matchLine.isExcluded = false; });
-      fileState.notify('isExcluded');
-      matchLineStates.forEach(mls => mls.notify('isExcluded'));
-    } else {
-      // exclude
-      matchLineStates.forEach(matchLine => { matchLine.isExcluded = true; });
-      fileState.isCollapsed = true;
-      fileState.notify();
-      matchLineStates.forEach(mls => mls.enableAutoNotification());
-    }
+    fileState.isExcluded
+      ? this._handleFileInclusion(fileState, matchLineStates)
+      : this._handleFileExclusion(fileState, matchLineStates);
+  }
+
+  _handleFileExclusion(fileState, matchLineStates) {
+    matchLineStates.forEach(matchLine => { matchLine.isExcluded = true; });
+    fileState.update({ isExcluded: true, isCollapsed: true });
+  }
+
+  _handleFileInclusion(fileState, matchLineStates) {
+    fileState.isExcluded = false;
+    matchLineStates.forEach(matchLine => { matchLine.isExcluded = false; });
   }
 
   _handleMatchLineExcludeToggle(matchLineState, fileState, boundMatchLineStates) {
+    matchLineState.isExcluded
+      ? this._handleMatchLineInclusion(matchLineState, fileState)
+      : this._handleMatchLineExclusion(matchLineState, fileState, boundMatchLineStates);
+  }
+
+  _handleMatchLineExclusion(matchLineState, fileState, boundMatchLineStates) {
     matchLineState.isExcluded = !matchLineState.isExcluded;
-    if (!matchLineState.isExcluded) {
-      // include
-      fileState.isExcluded = false;
-      return;
-    }
-    // exclude
     if (boundMatchLineStates.every(ml => ml.isExcluded)) {
       fileState.isExcluded = true;
     }
+  }
+
+  _handleMatchLineInclusion(matchLineState, fileState) {
+    matchLineState.isExcluded = !matchLineState.isExcluded;
+    fileState.isExcluded = false;
   }
 }
