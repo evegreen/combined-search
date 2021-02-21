@@ -29,9 +29,9 @@ export default class MatchLineView {
 
   mountTo(parentNode) {
     parentNode.appendChild(this._anchorNode);
-    this._matchLineState.subscribe(() => this.render(), mapMatchLineStateToProps);
-    // subscribe only on used fields
-    this._fileState.subscribe(() => this.render(), mapFileStateToProp);
+    const subscribeCb = () => this.render();
+    this._matchLineState.subscribe(subscribeCb, mapMatchLineStateToProps);
+    this._fileState.subscribe(subscribeCb, mapFileStateToProp);
     this.render();
   }
 

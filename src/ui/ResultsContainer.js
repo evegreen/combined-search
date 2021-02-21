@@ -1,3 +1,4 @@
+import { batchUpdate } from './createState';
 import FileView from './file/FileView';
 import MatchLineView from './matchLine/MatchLineView';
 
@@ -42,14 +43,16 @@ export default class ResultsContainer {
   }
 
   _handleFileExcludeToggle(fileState, matchLineStates) {
-    fileState.isExcluded
-      ? this._handleFileInclusion(fileState, matchLineStates)
-      : this._handleFileExclusion(fileState, matchLineStates);
+    batchUpdate(() => {
+      fileState.isExcluded
+        ? this._handleFileInclusion(fileState, matchLineStates)
+        : this._handleFileExclusion(fileState, matchLineStates);
+    });
   }
 
   _handleFileExclusion(fileState, matchLineStates) {
-    matchLineStates.forEach(matchLine => { matchLine.isExcluded = true; });
     fileState.update({ isExcluded: true, isCollapsed: true });
+    matchLineStates.forEach(matchLine => { matchLine.isExcluded = true; });
   }
 
   _handleFileInclusion(fileState, matchLineStates) {
@@ -58,9 +61,11 @@ export default class ResultsContainer {
   }
 
   _handleMatchLineExcludeToggle(matchLineState, fileState, boundMatchLineStates) {
-    matchLineState.isExcluded
-      ? this._handleMatchLineInclusion(matchLineState, fileState)
-      : this._handleMatchLineExclusion(matchLineState, fileState, boundMatchLineStates);
+    batchUpdate(() => {
+      matchLineState.isExcluded
+        ? this._handleMatchLineInclusion(matchLineState, fileState)
+        : this._handleMatchLineExclusion(matchLineState, fileState, boundMatchLineStates);
+    });
   }
 
   _handleMatchLineExclusion(matchLineState, fileState, boundMatchLineStates) {
