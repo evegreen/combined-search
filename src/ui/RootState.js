@@ -1,4 +1,4 @@
-import createState from './createState';
+import { createState } from './createState';
 
 // TODO: implement state serialization
 
