@@ -6,8 +6,11 @@ function mapFileStateToProp(fileState) {
   return fileState.isCollapsed;
 }
 
-function mapMatchLineStateToProp(matchLineState) {
-  return matchLineState.isExcluded;
+function mapMatchLineStateToProps(matchLineState) {
+  return {
+    lineNumber: matchLineState.lineNumber,
+    isMatchLineExcluded: matchLineState.isExcluded
+  };
 }
 
 export default class MatchLineView {
@@ -26,7 +29,7 @@ export default class MatchLineView {
 
   mountTo(parentNode) {
     parentNode.appendChild(this._anchorNode);
-    this._matchLineState.subscribe(() => this.render(), mapMatchLineStateToProp);
+    this._matchLineState.subscribe(() => this.render(), mapMatchLineStateToProps);
     // subscribe only on used fields
     this._fileState.subscribe(() => this.render(), mapFileStateToProp);
     this.render();
@@ -34,8 +37,7 @@ export default class MatchLineView {
 
   render() {
     const isFileCollapsed = mapFileStateToProp(this._fileState);
-    const isMatchLineExcluded = mapMatchLineStateToProp(this._matchLineState);
-    const { lineNumber } = this._matchLineState;
+    const { lineNumber, isMatchLineExcluded } = mapMatchLineStateToProps(this._matchLineState);
     if (isFileCollapsed) {
       clearElems([ this._prevMatchElem ]);
       this._prevMatchElem = null;

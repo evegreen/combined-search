@@ -3,6 +3,7 @@ import { excludeIcon, arrowDownIcon, arrowRightIcon } from '../icons';
 
 function mapFileStateToProps(fileState) {
   return {
+    filePath: fileState.filePath,
     isFileExcluded: fileState.isExcluded,
     isFileCollapsed: fileState.isCollapsed
   };
@@ -28,8 +29,7 @@ export default class FileView {
   }
 
   render() {
-    const { isFileExcluded, isFileCollapsed } = mapFileStateToProps(this._state);
-    const { filePath } = this._state;
+    const { filePath, isFileExcluded, isFileCollapsed } = mapFileStateToProps(this._state);
     const file = document.createElement('tr');
     if (isFileExcluded) file.className = 'ExcludedMatch';
     const fakeSecondColumn = document.createElement('td');
