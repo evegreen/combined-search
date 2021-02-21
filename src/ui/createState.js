@@ -48,9 +48,11 @@ export function createState(initObj) {
 
   /** @param {string | string[]} [changedFieldOrFields] */
   const getSubscribedCallbacks = (changedFieldOrFields) => {
-    if (!changedFieldOrFields || changedFieldOrFields.length === 0) {
-      //// add test - empty array means nothing changed instead of array absence
+    if (!changedFieldOrFields) { // manual notification
       return subscriptions.map(s => s.cb);
+    }
+    if (changedFieldOrFields.length === 0) { // nothing changed
+      return [];
     }
     const changedFields = typeof changedFieldOrFields === 'string'
       ? [changedFieldOrFields]

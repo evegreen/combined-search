@@ -99,6 +99,13 @@ describe('createState instance', () => {
       assert.equal(engineSubscriber, 1);
       assert.equal(oilSubscriber, 1);
     });
+    it('should not call subscriber, when all setted values was the same', () => {
+      const carState = createState({ fuel: 35, engineSpeed: 3000 });
+      let carSubscriber = 0;
+      carState.subscribe(() => { carSubscriber++; });
+      carState.update({ fuel: 35, engineSpeed: 3000 });
+      assert.equal(carSubscriber, 0);
+    });
   });
   it('should auto notify subscribers', () => {
     const carState = createState({ fuel: 35, engineSpeed: 3000 });
