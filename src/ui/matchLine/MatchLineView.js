@@ -1,6 +1,6 @@
 import { clearElems } from '../../utils';
 import { highlightString } from '../matchHighlighter';
-import { excludeIcon } from '../icons';
+import { excludeIcon, undoIcon } from '../icons';
 
 function mapFileStateToProp(fileState) {
   return fileState.isCollapsed;
@@ -48,7 +48,7 @@ export default class MatchLineView {
     match.append(
       this.renderLieNumberColumn(lineNumber),
       this.renderMatchStringColumn(),
-      this.renderExcludeColumn()
+      this.renderExcludeColumn(isMatchLineExcluded)
     );
 
     clearElems([ this._prevMatchElem ]);
@@ -70,11 +70,11 @@ export default class MatchLineView {
     return stringElem;
   }
 
-  renderExcludeColumn() {
+  renderExcludeColumn(isExcluded) {
     const excludeColumn = document.createElement('td');
     excludeColumn.className = 'ExcludeButton';
     excludeColumn.onclick = this._handleExcludeToggle;
-    excludeColumn.innerHTML = excludeIcon;
+    excludeColumn.innerHTML = isExcluded ? undoIcon : excludeIcon;
     return excludeColumn;
   }
 }

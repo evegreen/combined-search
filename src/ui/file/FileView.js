@@ -1,5 +1,5 @@
 import { clearElems } from '../../utils';
-import { excludeIcon, arrowDownIcon, arrowRightIcon } from '../icons';
+import { excludeIcon, undoIcon, arrowDownIcon, arrowRightIcon } from '../icons';
 
 function mapFileStateToProps(fileState) {
   return {
@@ -37,7 +37,7 @@ export default class FileView {
     file.append(
       this.renderCollapseFilePathColumn(filePath, isFileCollapsed),
       fakeSecondColumn,
-      this.renderExcludeButtonColumn()
+      this.renderExcludeButtonColumn(isFileExcluded)
     );
 
     clearElems([ this._prevFileElem ]);
@@ -60,11 +60,11 @@ export default class FileView {
     return column;
   }
 
-  renderExcludeButtonColumn() {
+  renderExcludeButtonColumn(isExcluded) {
     const column = document.createElement('td');
     column.className = 'ExcludeButton';
     column.onclick = this._handleExcludeToggle;
-    column.innerHTML = excludeIcon;
+    column.innerHTML = isExcluded ? undoIcon : excludeIcon;
     return column;
   }
 }
