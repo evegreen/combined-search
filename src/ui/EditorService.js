@@ -1,10 +1,11 @@
-export default class Editor {
-  constructor(absPathsMap) {
+export default class EditorService {
+  constructor(absPathsMap, settingsState) {
     this._absPathsMap = absPathsMap;
-
-    //// this is stub
-    //// extract port storing and saving from ui/index.js to this file
-    this._port = 3000;
+    settingsState.subscribe(
+      () => { this._port = settingsState.oesPort },
+      ss => ss.oesPort
+    );
+    this._port = settingsState.oesPort;
   }
 
   /**

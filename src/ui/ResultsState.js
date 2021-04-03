@@ -21,7 +21,7 @@ function deserializeMatchLines(macthLineEntries) {
   );
 }
 
-export default class RootState {
+export default class ResultsState {
   constructor(serializedState) {
     const { searchResult, query, stats, absPathsMap } = JSON.parse(serializedState);
     this.files = deserializeFiles(searchResult);
