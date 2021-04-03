@@ -7,10 +7,11 @@
  *
  * Usage:
  *   node openEditorService.js [optionalPort]
+ *   cs-oes [optionalPort]
  *
  * Examples:
  *   node openEditorService.js
- *   node openEditorService.js 5000
+ *   cs-oes 5000
  *
  */
 
