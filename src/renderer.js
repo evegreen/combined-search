@@ -12,7 +12,7 @@ export default function renderHtmlResult(initialState) {
   const { queryPatterns } = initialState;
   // avoid replacer patterns usage
   let result = template.replace(
-    '$$INITIAL_STATE$$',
+    '$$INITIAL_RESULTS_STATE$$',
     () => escapeForJsTemplateLiteral(JSON.stringify(initialState))
   );
   // avoid replacer patterns usage

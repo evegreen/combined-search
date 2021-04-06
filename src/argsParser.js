@@ -7,6 +7,11 @@ const packageJson = JSON.parse(
   )
 );
 
+// TODO: improvement: make possible use many search paths, like in ripgrep
+// TODO: improvement: add paths exclusions
+
+// TODO: add live mode (with auto updating) (re-search when opened or paths watching)
+
 export default function parseArgs() {
   program.on('--help', () => {
     console.log('');
@@ -42,7 +47,6 @@ export default function parseArgs() {
   const queryReducer = (acc, arg) => acc += `${arg}  `;
   const inaccurateQuery = program.rawArgs.slice(2).reduce(queryReducer, '');
   const patterns = program.args[0].split(delimiter);
-  // TODO: improvement: make possible use many search paths, like in ripgrep
   const searchPath = program.args[1];
 
   return {
