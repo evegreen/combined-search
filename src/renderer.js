@@ -13,7 +13,7 @@ export default function renderHtmlResult(initialState) {
   // avoid replacer patterns usage
   let result = template.replace(
     '$$INITIAL_RESULTS_STATE$$',
-    () => escapeForJsTemplateLiteral(JSON.stringify(initialState, null, 2)) //// NICE DEBUG
+    () => escapeForJsTemplateLiteral(JSON.stringify(initialState))
   );
   // avoid replacer patterns usage
   result = result.replace('$$QUERY_PATTERNS_TITLE$$', () => queryPatterns);
