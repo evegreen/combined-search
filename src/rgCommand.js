@@ -1,6 +1,8 @@
 import { spawn } from 'child_process';
 import Promise from 'bluebird';
 
+let tempJsonPart = null;
+
 /**
  * mutable function
  * @param {Buffer} data - Ripgrep stdout json data
@@ -9,8 +11,18 @@ import Promise from 'bluebird';
  */
 function handleRgJsonData(data, targetRgResult, targetStats) {
   const jsons = String(data).split('\n');
-  jsons.forEach(json => {
-    if (!json) return;
+  jsons.forEach((json, idx) => {
+    if (idx === jsons.length - 1) {
+      if (!json) return;
+      // wait next stdout package
+      tempJsonPart = json;
+      return;
+    }
+    if (tempJsonPart) {
+      // next stdout package received
+      json = tempJsonPart + json;
+      tempJsonPart = null;
+    }
     const { type, data } = JSON.parse(json);
     const { path, lines, line_number: lineNumber, submatches } = data;
     if (type === 'match') {
