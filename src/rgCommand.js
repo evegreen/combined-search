@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
 import Promise from 'bluebird';
+import { rgPath } from 'vscode-ripgrep';
 
 let tempJsonPart = null;
 
@@ -52,7 +53,7 @@ export function rgJsonCommand(ignoreCase, pattern, searchPath) {
     // TODO: allow configure which patterns is regex, and which not
     rgOptions.push('--fixed-strings');
     if (ignoreCase) rgOptions.push('--ignore-case');
-    const rgCmd = spawn('rg', [...rgOptions, pattern, searchPath]);
+    const rgCmd = spawn(rgPath, [...rgOptions, pattern, searchPath]);
     let rgResult = {};
     let stats = {};
     rgCmd.stderr.on('data', (data) => {

@@ -1,11 +1,5 @@
-import fs from 'fs';
 import program from 'commander';
-const packageJson = JSON.parse(
-  fs.readFileSync(
-    new URL('../package.json', import.meta.url),
-    'utf8'
-  )
-);
+import {getVersions} from './version.js';
 
 // TODO: improvement: make possible use many search paths, like in ripgrep
 // TODO: improvement: add paths exclusions
@@ -26,7 +20,7 @@ export default function parseArgs() {
   });
 
   program
-    .version(packageJson.version)
+    .version(getVersions())
     .name('cs')
     .usage('[global options] "entries" [path]')
     .option('-d, --delimiter [value]', 'delimiter for each search entry', '|')
@@ -34,7 +28,8 @@ export default function parseArgs() {
     .option('-s, --sort-different-matches', 'sort by different matches count desc')
     .parse(process.argv);
 
-  const { delimiter, ignoreCase, sortDifferentMatches } = program;
+  const options = program.opts();
+  const { delimiter, ignoreCase, sortDifferentMatches } = options;
   if (program.args.length === 1) {
     program.args.push('./');
   }

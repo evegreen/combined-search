@@ -16,8 +16,6 @@
  */
 
 import http from 'http';
-import url from 'url';
-import querystring from 'querystring';
 import launchEditor from 'react-dev-utils/launchEditor.js';
 
 const port = process.argv[2] || 3000;
@@ -28,11 +26,13 @@ function handleRequest(request, response) {
     console.warn(`WARNING: openEditorService supports only ${WDS_LIKE_URL} url`);
     return;
   }
-
-  const parsedUrl = url.parse(request.url);
-  const parsedQuery = querystring.parse(parsedUrl.query);
-  const fileName = parsedQuery.fileName;
-  const lineNumber = Number(parsedQuery.lineNumber);
+  const url = new URL('http://localhost' + request.url);
+  const fileName = url.searchParams.get('fileName');
+  const lineNumber = Number(url.searchParams.get('lineNumber'));
+  if (!fileName) {
+    console.warn('got request without fileName');
+    return;
+  }
   launchEditor(fileName, lineNumber);
   response.end();
 }
