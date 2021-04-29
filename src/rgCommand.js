@@ -49,7 +49,7 @@ function handleRgJsonData(data, targetRgResult, targetStats) {
 
 export function rgJsonCommand(ignoreCase, pattern, searchPath) {
   return new Promise((resolve, reject) => {
-    let rgOptions = ['--json'];
+    let rgOptions = ['--json', '--hidden'];
     // TODO: allow configure which patterns is regex, and which not
     rgOptions.push('--fixed-strings');
     if (ignoreCase) rgOptions.push('--ignore-case');
