@@ -15,6 +15,7 @@ export default function parseArgs() {
     console.log('  cs -d "^" "pattern1^pattern2"')
     console.log('  cs -i "pattern1|pattern2" someDirectory/');
     console.log('  cs -s "new |delete "');
+    console.log('  cs -m 500K "pattern"')
     console.log();
     console.log('If you has runned webpack-dev-server (or openEditorService), you may click on search result matches, your editor will open automatically');
   });
@@ -26,10 +27,11 @@ export default function parseArgs() {
     .option('-d, --delimiter [value]', 'delimiter for each search entry', '|')
     .option('-i, --ignore-case', 'case-insensitive search')
     .option('-s, --sort-different-matches', 'sort by different matches count desc')
+    .option('-m, --max-filesize [value]', 'ignore files larger than NUM in size. this does not apply to directories. (rg compatible)')
     .parse(process.argv);
 
   const options = program.opts();
-  const { delimiter, ignoreCase, sortDifferentMatches } = options;
+  const { delimiter, ignoreCase, maxFilesize, sortDifferentMatches } = options;
   if (program.args.length === 1) {
     program.args.push('./');
   }
@@ -49,6 +51,7 @@ export default function parseArgs() {
     patterns,
     searchPath,
     ignoreCase,
+    maxFilesize,
     sortByDiffMatchCountArg: sortDifferentMatches
   };
 };
