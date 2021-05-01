@@ -36,59 +36,13 @@ function parseResult(unparsedResult) {
   return {rgResult, stats};
 }
 
-/*
-let tempJsonPart = null;
-
-/**
- * mutable function
- * @param {Buffer} data - Ripgrep stdout json data
- * @param {Object<string, Object>} targetRgResult - Mutable object with results
- * @param {Object<string, any>} targetStats - Mutable object with result stats
- *
-function OLD_handleRgJsonData(data, targetRgResult, targetStats) {
-  const jsons = String(data).split('\n');
-  jsons.forEach((json, idx) => {
-    if (idx === jsons.length - 1) {
-      if (!json) return;
-      // wait next stdout package
-      tempJsonPart = json;
-      return;
-    }
-    if (tempJsonPart) {
-      // next stdout package received
-      json = tempJsonPart + json;
-      tempJsonPart = null;
-    }
-    const { type, data } = JSON.parse(json);
-    const { path, lines, line_number: lineNumber, submatches } = data;
-    if (type === 'match') {
-      const filePath = path.text;
-      if (!targetRgResult[filePath]) {
-        targetRgResult[filePath] = { entries: {} };
-      }
-      targetRgResult[filePath].entries[lineNumber] = {
-        matchString: lines.text,
-        submatches
-      };
-      return;
-    }
-    if (type === 'summary') {
-      targetStats.matches = data.stats.matches;
-      targetStats.filesContainedMatches = data.stats.searches_with_match;
-      targetStats.matchedLines = data.stats.matched_lines;
-      return;
-    }
-    // ignore other json types
-  });
-}
-*/
-
-export function rgJsonCommand(ignoreCase, pattern, searchPath) {
+export function rgJsonCommand(ignoreCase, maxFilesize, pattern, searchPath) {
   return new Promise((resolve, reject) => {
     let rgOptions = ['--json', '--hidden'];
     // TODO: allow configure which patterns is regex, and which not
     rgOptions.push('--fixed-strings');
     if (ignoreCase) rgOptions.push('--ignore-case');
+    if (maxFilesize) rgOptions.push('--max-filesize', maxFilesize);
     const rgCmd = spawn(rgPath, [...rgOptions, pattern, searchPath]);
     rgCmd.stderr.on('data', (data) => {
       reject(new Error(data));

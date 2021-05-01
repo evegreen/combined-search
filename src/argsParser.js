@@ -27,11 +27,11 @@ export default function parseArgs() {
     .option('-d, --delimiter [value]', 'delimiter for each search entry', '|')
     .option('-i, --ignore-case', 'case-insensitive search')
     .option('-s, --sort-different-matches', 'sort by different matches count desc')
-    .option('-m, --max-filesize', 'ignore files larger than NUM in size. this does not apply to directories. (rg compatible)')
+    .option('-m, --max-filesize [value]', 'ignore files larger than NUM in size. this does not apply to directories. (rg compatible)')
     .parse(process.argv);
 
   const options = program.opts();
-  const { delimiter, ignoreCase, sortDifferentMatches } = options;
+  const { delimiter, ignoreCase, maxFilesize, sortDifferentMatches } = options;
   if (program.args.length === 1) {
     program.args.push('./');
   }
@@ -51,6 +51,7 @@ export default function parseArgs() {
     patterns,
     searchPath,
     ignoreCase,
+    maxFilesize,
     sortByDiffMatchCountArg: sortDifferentMatches
   };
 };

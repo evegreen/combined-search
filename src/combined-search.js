@@ -12,7 +12,7 @@ import {
 import renderHtmlResult from './renderer.js';
 import { sortObjectMap } from './utils.js';
 
-const { inaccurateQuery, patterns, searchPath, ignoreCase, sortByDiffMatchCountArg } = parseArgs();
+const { inaccurateQuery, patterns, searchPath, ignoreCase, maxFilesize, sortByDiffMatchCountArg } = parseArgs();
 runSearch();
 
 async function runSearch() {
@@ -28,7 +28,7 @@ async function runSearch() {
 }
 
 async function search() {
-  const { result, stats } = await rgJsonCommand(ignoreCase, patterns[0], searchPath);
+  const { result, stats } = await rgJsonCommand(ignoreCase, maxFilesize, patterns[0], searchPath);
   let sortedResult = null;
   let absPathsMap = null;
   sortedResult = sortObjectMap(result, matchLinesCountComparator);
@@ -43,7 +43,7 @@ async function search() {
 }
 
 async function searchCombined() {
-  const rgCommands = patterns.map(pattern => rgJsonCommand(ignoreCase, pattern, searchPath));
+  const rgCommands = patterns.map(pattern => rgJsonCommand(ignoreCase, maxFilesize, pattern, searchPath));
   const resultsWithStats = await Promise.all(rgCommands);
   const { combinedResult, combinedStats } = combineResults(resultsWithStats);
   const comparator = sortByDiffMatchCountArg ? differentMatchCountComparator : matchLinesCountComparator;
