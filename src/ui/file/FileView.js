@@ -30,14 +30,13 @@ export default class FileView {
 
   render() {
     const { filePath, isFileExcluded, isFileCollapsed } = mapFileStateToProps(this._state);
-    const file = document.createElement('tr');
-    if (isFileExcluded) file.className = 'ExcludedMatch';
-    const fakeSecondColumn = document.createElement('td');
-    fakeSecondColumn.onclick = this._handleClick;
+    const file = document.createElement('div');
+    const fileCls = `FileLine ${isFileExcluded ? 'FileLine_excluded' : ''}`;
+    file.className = fileCls;
     file.append(
-      this.renderCollapseFilePathColumn(filePath, isFileCollapsed),
-      fakeSecondColumn,
-      this.renderExcludeButtonColumn(isFileExcluded)
+      this.renderCollapseButton(isFileCollapsed),
+      this.renderFilePath(filePath),
+      this.renderExcludeButton(isFileExcluded)
     );
 
     clearElems([ this._prevFileElem ]);
@@ -45,26 +44,28 @@ export default class FileView {
     this._anchorNode.after(file);
   }
 
-  renderCollapseFilePathColumn(filePath, isCollapsed) {
-    const column = document.createElement('td');
-    const collapse = document.createElement('span');
+  renderCollapseButton(isCollapsed) {
+    const collapse = document.createElement('div');
+    collapse.className = 'CollapseButton';
     collapse.onclick = this._handleCollapseToggle;
     const collapseIcon = isCollapsed ? arrowRightIcon : arrowDownIcon;
     collapse.innerHTML = collapseIcon;
-    column.appendChild(collapse);
+    return collapse;
+  }
+
+  renderFilePath(filePath) {
     const filePathElem = document.createElement('span');
     filePathElem.className = 'Highlight';
     filePathElem.onclick = this._handleClick;
     filePathElem.innerHTML = `<code>${filePath}</code>`;
-    column.appendChild(filePathElem);
-    return column;
+    return filePathElem;
   }
 
-  renderExcludeButtonColumn(isExcluded) {
-    const column = document.createElement('td');
-    column.className = 'ExcludeButton';
-    column.onclick = this._handleExcludeToggle;
-    column.innerHTML = isExcluded ? undoIcon : excludeIcon;
-    return column;
+  renderExcludeButton(isExcluded) {
+    const excludeButton = document.createElement('div');
+    excludeButton.className = 'ExcludeButton';
+    excludeButton.onclick = this._handleExcludeToggle;
+    excludeButton.innerHTML = isExcluded ? undoIcon : excludeIcon;
+    return excludeButton;
   }
 }

@@ -4,7 +4,7 @@ import MatchLineView from './matchLine/MatchLineView';
 
 export default class ResultsContainer {
   constructor({ files, handleOpenEditor }) {
-    this.elem = document.createElement('table');
+    this.elem = document.createElement('div');
     this.elem.className = 'MatchTable';
     this._files = files;
     this._handleOpenEditor = handleOpenEditor;
