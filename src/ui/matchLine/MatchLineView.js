@@ -43,12 +43,13 @@ export default class MatchLineView {
       this._prevMatchElem = null;
       return;
     }
-    const match = document.createElement('tr');
-    if (isMatchLineExcluded) match.className = 'ExcludedMatch';
+    const match = document.createElement('div');
+    const matchCls = `MatchLine ${isMatchLineExcluded ? 'MatchLine_excluded' : ''}`;
+    match.className = matchCls;
     match.append(
-      this.renderLieNumberColumn(lineNumber),
-      this.renderMatchStringColumn(),
-      this.renderExcludeColumn(isMatchLineExcluded)
+      this.renderLieNumber(lineNumber),
+      this.renderMatchString(),
+      this.renderExcludeButton(isMatchLineExcluded)
     );
 
     clearElems([ this._prevMatchElem ]);
@@ -56,25 +57,27 @@ export default class MatchLineView {
     this._anchorNode.after(match);
   }
 
-  renderLieNumberColumn(lineNumber) {
-    const lineNumberElem = document.createElement('td');
+  renderLieNumber(lineNumber) {
+    const lineNumberElem = document.createElement('div');
+    lineNumberElem.className = 'LineNumber';
     lineNumberElem.onclick = this._handleClick;
     lineNumberElem.innerHTML = `<code>${lineNumber}</code>`;
     return lineNumberElem;
   }
 
-  renderMatchStringColumn() {
-    const stringElem = document.createElement('td');
+  renderMatchString() {
+    const stringElem = document.createElement('div');
+    stringElem.className = 'MatchString';
     stringElem.onclick = this._handleClick;
     stringElem.innerHTML = `<code>${this._escapedHighlightedString}</code>`;
     return stringElem;
   }
 
-  renderExcludeColumn(isExcluded) {
-    const excludeColumn = document.createElement('td');
-    excludeColumn.className = 'ExcludeButton';
-    excludeColumn.onclick = this._handleExcludeToggle;
-    excludeColumn.innerHTML = isExcluded ? undoIcon : excludeIcon;
-    return excludeColumn;
+  renderExcludeButton(isExcluded) {
+    const excludeButton = document.createElement('div');
+    excludeButton.className = 'ExcludeButton';
+    excludeButton.onclick = this._handleExcludeToggle;
+    excludeButton.innerHTML = isExcluded ? undoIcon : excludeIcon;
+    return excludeButton;
   }
 }
