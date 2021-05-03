@@ -2,9 +2,8 @@ import { spawn } from 'child_process';
 import Promise from 'bluebird';
 import { rgPath } from 'vscode-ripgrep';
 
-let unparsedResult = '';
-function handleRgJsonData(data) {
-  unparsedResult += data;
+function handleRgJsonData(data, prevUnparsedResult) {
+  return prevUnparsedResult += data;
 }
 function parseResult(unparsedResult) {
   let rgResult = {};
@@ -47,8 +46,9 @@ export function rgJsonCommand(ignoreCase, maxFilesize, pattern, searchPath) {
     rgCmd.stderr.on('data', (data) => {
       reject(new Error(data));
     });
+    let unparsedResult = '';
     rgCmd.stdout.on('data', (data) => {
-      handleRgJsonData(data);
+      unparsedResult = handleRgJsonData(data, unparsedResult);
     });
     rgCmd.on('close', (code) => {
       // 0 is ok, 1 is no matches, 2 is error
