@@ -1,5 +1,5 @@
 {
-  "name": "combined-search",
+  "name": "@evegreen/combined-search",
   "version": "0.8.0",
   "description": "combined search with ripgrep",
   "main": "src/combined-search.js",
