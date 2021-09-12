@@ -31,7 +31,7 @@ export default class FileView {
   render() {
     const { filePath, isFileExcluded, isFileCollapsed } = mapFileStateToProps(this._state);
     const file = document.createElement('div');
-    const fileCls = `FileLine ${isFileExcluded ? 'FileLine_excluded' : ''}`;
+    const fileCls = `FileLine${isFileExcluded ? ' FileLine_excluded' : ''}`;
     file.className = fileCls;
     file.append(
       this.renderCollapseButton(isFileCollapsed),

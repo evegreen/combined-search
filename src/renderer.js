@@ -9,7 +9,7 @@ const template = fs.readFileSync(
 );
 
 export default function renderHtmlResult(initialState) {
-  const { queryPatterns } = initialState;
+  const {queryPatterns} = initialState;
   // avoid replacer patterns usage
   let result = template.replace(
     '$$INITIAL_RESULTS_STATE$$',

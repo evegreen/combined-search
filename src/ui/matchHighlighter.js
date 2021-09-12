@@ -3,7 +3,7 @@ import { escapeHtml } from '../utils.js';
 const OPEN_HL_SPAN = '<span class="Highlight">';
 const CLOSE_SPAN = '</span>';
 
-export function highlightString(matchString, submatches) {
+export function highlightString(matchString, submatches, escapeWhitespaces = false) {
   submatches.sort((a, b) => a.start - b.start);
   let sourceString = matchString;
   let resultString = '';
@@ -13,12 +13,12 @@ export function highlightString(matchString, submatches) {
     const submatch = submatches[i];
     const previous = sourceString.substring(0, submatch.start - offset);
     const match = submatch.match.text;
-    const escapedPrevious = escapeHtml(previous);
-    const escapedMatch = OPEN_HL_SPAN + escapeHtml(match) + CLOSE_SPAN;
+    const escapedPrevious = escapeHtml(previous, escapeWhitespaces);
+    const escapedMatch = OPEN_HL_SPAN + escapeHtml(match, escapeWhitespaces) + CLOSE_SPAN;
     resultString += `${escapedPrevious}${escapedMatch}`;
     sourceString = sourceString.substring(submatch.end - offset);
     offset = matchString.length - sourceString.length;
   }
-  resultString += escapeHtml(sourceString);
+  resultString += escapeHtml(sourceString, escapeWhitespaces);
   return resultString;
 };

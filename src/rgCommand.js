@@ -9,18 +9,19 @@ function parseResult(unparsedResult) {
   let rgResult = {};
   let stats = {};
   const jsons = unparsedResult.split('\n');
-  jsons.forEach((json, idx) => {
+  jsons.forEach((json) => {
     if (!json) return;
     const { type, data } = JSON.parse(json);
     const { path, lines, line_number: lineNumber, submatches } = data;
-    if (type === 'match') {
+    if (type === 'match' || type === 'context') {
       const filePath = path.text;
       if (!rgResult[filePath]) {
-        rgResult[filePath] = { entries: {} };
+        rgResult[filePath] = {entries: {}};
       }
       rgResult[filePath].entries[lineNumber] = {
         matchString: lines.text,
-        submatches
+        submatches,
+        isCtxt: type === 'context'
       };
       return;
     }
@@ -35,13 +36,14 @@ function parseResult(unparsedResult) {
   return {rgResult, stats};
 }
 
-export function rgJsonCommand(ignoreCase, maxFilesize, pattern, searchPath) {
+export function rgJsonCommand({ignoreCase, maxFilesize, lineCtxtNumber, pattern, searchPath}) {
   return new Promise((resolve, reject) => {
     let rgOptions = ['--json', '--hidden'];
     // TODO: allow configure which patterns is regex, and which not
     rgOptions.push('--fixed-strings');
     if (ignoreCase) rgOptions.push('--ignore-case');
     if (maxFilesize) rgOptions.push('--max-filesize', maxFilesize);
+    if (lineCtxtNumber) rgOptions.push('--context', lineCtxtNumber);
     const rgCmd = spawn(rgPath, [...rgOptions, pattern, searchPath]);
     rgCmd.stderr.on('data', (data) => {
       reject(new Error(data));

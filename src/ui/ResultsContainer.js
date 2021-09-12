@@ -1,82 +1,101 @@
 import { batchUpdate } from './createState';
 import FileView from './file/FileView';
-import MatchLineView from './matchLine/MatchLineView';
+import LineView from './line/LineView';
 
 export default class ResultsContainer {
-  constructor({ files, handleOpenEditor }) {
+  constructor({files, isContextSearch, handleOpenEditor}) {
     this.elem = document.createElement('div');
     this.elem.className = 'MatchTable';
     this._files = files;
+    this._isContextSearch = isContextSearch;
     this._handleOpenEditor = handleOpenEditor;
     this.render();
   }
 
   render() {
     if (this._files.length === 0) return;
-    for (let { file, matchLines } of this._files) {
-      const fileView = this.renderFile(file, matchLines);
+    for (let {file, lines} of this._files) {
+      const fileView = this.renderFile(file, lines);
       fileView.mountTo(this.elem);
-      for (let matchLine of matchLines) {
-        const matchLineView = this.renderMatchLine(matchLine, file, matchLines);
-        matchLineView.mountTo(this.elem);
+      let lastLineNumber;
+      for (let line of lines) {
+        const currentLineNumber = Number(line.lineNumber);
+        if (
+          line.isCtxt &&
+          lastLineNumber &&
+          (lastLineNumber + 1 !== currentLineNumber)
+        ) {
+          const ctxtSeparator = this.renderContextSeparator();
+          this.elem.append(ctxtSeparator);
+        }
+        lastLineNumber = currentLineNumber;
+        const lineView = this.renderLine(line, file, lines);
+        lineView.mountTo(this.elem);
       }
     }
   }
 
-  renderFile(file, matchLines) {
+  renderFile(file, lines) {
     return new FileView({
       fileState: file,
       handleClick: () => this._handleOpenEditor(file.filePath),
-      handleExcludeToggle: () => this._handleFileExcludeToggle(file, matchLines)
+      handleExcludeToggle: () => this._handleFileExcludeToggle(file, lines)
     });
   }
 
-  renderMatchLine(matchLine, file, boundMatchLines) {
-    return new MatchLineView({
-      matchLineState: matchLine,
+  renderLine(line, file, boundLines) {
+    return new LineView({
+      lineState: line,
       fileState: file,
+      isContextSearch: this._isContextSearch,
       handleClick: () =>
-        this._handleOpenEditor(file.filePath, matchLine.lineNumber),
+        this._handleOpenEditor(file.filePath, line.lineNumber),
       handleExcludeToggle: () =>
-        this._handleMatchLineExcludeToggle(matchLine, file, boundMatchLines)
+        this._handleLineExcludeToggle(line, file, boundLines)
     });
   }
 
-  _handleFileExcludeToggle(fileState, matchLineStates) {
+  renderContextSeparator() {
+    const separator = document.createElement('div');
+    separator.className = 'ContextSeparator';
+    return separator;
+  }
+
+  _handleFileExcludeToggle(fileState, lineStates) {
     batchUpdate(() => {
       fileState.isExcluded
-        ? this._handleFileInclusion(fileState, matchLineStates)
-        : this._handleFileExclusion(fileState, matchLineStates);
+        ? this._handleFileInclusion(fileState, lineStates)
+        : this._handleFileExclusion(fileState, lineStates);
     });
   }
 
-  _handleFileExclusion(fileState, matchLineStates) {
+  _handleFileExclusion(fileState, lineStates) {
     fileState.update({ isExcluded: true, isCollapsed: true });
-    matchLineStates.forEach(matchLine => { matchLine.isExcluded = true; });
+    lineStates.forEach(line => { line.isExcluded = true; });
   }
 
-  _handleFileInclusion(fileState, matchLineStates) {
+  _handleFileInclusion(fileState, lineStates) {
     fileState.isExcluded = false;
-    matchLineStates.forEach(matchLine => { matchLine.isExcluded = false; });
+    lineStates.forEach(line => { line.isExcluded = false; });
   }
 
-  _handleMatchLineExcludeToggle(matchLineState, fileState, boundMatchLineStates) {
+  _handleLineExcludeToggle(lineState, fileState, boundLineStates) {
     batchUpdate(() => {
-      matchLineState.isExcluded
-        ? this._handleMatchLineInclusion(matchLineState, fileState)
-        : this._handleMatchLineExclusion(matchLineState, fileState, boundMatchLineStates);
+      lineState.isExcluded
+        ? this._handleLineInclusion(lineState, fileState)
+        : this._handleLineExclusion(lineState, fileState, boundLineStates);
     });
   }
 
-  _handleMatchLineExclusion(matchLineState, fileState, boundMatchLineStates) {
-    matchLineState.isExcluded = !matchLineState.isExcluded;
-    if (boundMatchLineStates.every(ml => ml.isExcluded)) {
+  _handleLineExclusion(lineState, fileState, boundLineStates) {
+    lineState.isExcluded = !lineState.isExcluded;
+    if (boundLineStates.every(ml => ml.isExcluded)) {
       fileState.isExcluded = true;
     }
   }
 
-  _handleMatchLineInclusion(matchLineState, fileState) {
-    matchLineState.isExcluded = !matchLineState.isExcluded;
+  _handleLineInclusion(lineState, fileState) {
+    lineState.isExcluded = !lineState.isExcluded;
     fileState.isExcluded = false;
   }
 }

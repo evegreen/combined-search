@@ -5,16 +5,17 @@ import { createState } from './createState';
 function deserializeFiles(searchResults) {
   return Object.entries(searchResults).map(([filePath, { entries }]) => ({
     file: createState({ filePath, isExcluded: false, isCollapsed: false }),
-    matchLines: deserializeMatchLines(entries),
+    lines: deserializeLines(entries),
   }));
 }
 
-function deserializeMatchLines(macthLineEntries) {
+function deserializeLines(macthLineEntries) {
   return Object.entries(macthLineEntries).map(
-    ([lineNumber, { matchString, submatches }]) =>
+    ([lineNumber, {matchString, submatches, isCtxt}]) =>
       createState({
         lineNumber,
         matchString,
+        isCtxt,
         submatches,
         isExcluded: false,
       })
@@ -23,8 +24,9 @@ function deserializeMatchLines(macthLineEntries) {
 
 export default class ResultsState {
   constructor(serializedState) {
-    const { searchResult, query, stats, absPathsMap } = JSON.parse(serializedState);
+    const {searchResult, isContextSearch, query, stats, absPathsMap} = JSON.parse(serializedState);
     this.files = deserializeFiles(searchResult);
+    this.isContextSearch = isContextSearch;
     this.query = query;
     this.stats = stats;
     this.absPathsMap = absPathsMap;

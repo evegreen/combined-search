@@ -1,28 +1,32 @@
-import { clearElems } from '../../utils';
-import { highlightString } from '../matchHighlighter';
-import { excludeIcon, undoIcon } from '../icons';
+import {clearElems, escapeHtml} from '../../utils';
+import {highlightString} from '../matchHighlighter';
+import {excludeIcon, undoIcon} from '../icons';
 
 function mapFileStateToProp(fileState) {
   return fileState.isCollapsed;
 }
 
-function mapMatchLineStateToProps(matchLineState) {
+function mapLineStateToProps(lineState) {
   return {
-    lineNumber: matchLineState.lineNumber,
-    isMatchLineExcluded: matchLineState.isExcluded
+    lineNumber: lineState.lineNumber,
+    isCtxt: lineState.isCtxt,
+    isLineExcluded: lineState.isExcluded
   };
 }
 
-export default class MatchLineView {
-  constructor({matchLineState, fileState, handleClick, handleExcludeToggle}) {
-    this._anchorNode = document.createComment(MatchLineView.prototype.constructor.name);
+//// fix word wrap for long lines in context search
+
+export default class LineView {
+  constructor({lineState, fileState, isContextSearch, handleClick, handleExcludeToggle}) {
+    this._anchorNode = document.createComment(LineView.prototype.constructor.name);
     // prev elem stored only for unmount
     this._prevMatchElem = null;
-    this._matchLineState = matchLineState;
+    this._lineState = lineState;
     this._fileState = fileState;
-    const { matchString, submatches } = this._matchLineState;
-    // there is always at least one match, so escaping proceed into highlight algorhytm
-    this._escapedHighlightedString = highlightString(matchString, submatches);
+    const {matchString, submatches, isCtxt} = this._lineState;
+    this._escapedHighlightedString = isCtxt
+      ? escapeHtml(matchString, isContextSearch)
+      : highlightString(matchString, submatches, isContextSearch);
     this._handleClick = handleClick;
     this._handleExcludeToggle = handleExcludeToggle;
   }
@@ -30,27 +34,27 @@ export default class MatchLineView {
   mountTo(parentNode) {
     parentNode.appendChild(this._anchorNode);
     const subscribeCb = () => this.render();
-    this._matchLineState.subscribe(subscribeCb, mapMatchLineStateToProps);
+    this._lineState.subscribe(subscribeCb, mapLineStateToProps);
     this._fileState.subscribe(subscribeCb, mapFileStateToProp);
     this.render();
   }
 
   render() {
     const isFileCollapsed = mapFileStateToProp(this._fileState);
-    const { lineNumber, isMatchLineExcluded } = mapMatchLineStateToProps(this._matchLineState);
+    const {lineNumber, isLineExcluded, isCtxt} = mapLineStateToProps(this._lineState);
     if (isFileCollapsed) {
       clearElems([ this._prevMatchElem ]);
       this._prevMatchElem = null;
       return;
     }
     const match = document.createElement('div');
-    const matchCls = `MatchLine ${isMatchLineExcluded ? 'MatchLine_excluded' : ''}`;
+    const matchCls = `MatchLine${isLineExcluded ? ' MatchLine_excluded' : ''}`;
     match.className = matchCls;
     match.append(
       this.renderLieNumber(lineNumber),
-      this.renderMatchString(),
-      this.renderExcludeButton(isMatchLineExcluded)
+      this.renderMatchString(isCtxt)
     );
+    if (!isCtxt) match.append( this.renderExcludeButton(isLineExcluded) );
 
     clearElems([ this._prevMatchElem ]);
     this._prevMatchElem = match;
@@ -65,9 +69,9 @@ export default class MatchLineView {
     return lineNumberElem;
   }
 
-  renderMatchString() {
+  renderMatchString(isCtxt) {
     const stringElem = document.createElement('div');
-    stringElem.className = 'MatchString';
+    stringElem.className = `MatchString${isCtxt && ' MatchString_ctxt'}`;
     stringElem.onclick = this._handleClick;
     stringElem.innerHTML = `<code>${this._escapedHighlightedString}</code>`;
     return stringElem;

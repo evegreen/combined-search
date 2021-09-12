@@ -11,13 +11,16 @@ export function sortObjectMap(objectMap, comparator) {
   }, {});
 };
 
-export function escapeHtml(htmlString) {
-  return htmlString
+export function escapeHtml(htmlString, escapeWhitespaces = false) {
+  const partialEscaped = htmlString
     .split('&').join('&amp;')
     .split('"').join('&quot;')
     .split(`'`).join('&#39;')
     .split('<').join('&lt;')
     .split('>').join('&gt;');
+  return escapeWhitespaces
+    ? partialEscaped.split(' ').join('&nbsp;')
+    : partialEscaped;
 };
 
 export function escapeForJsTemplateLiteral(str) {
