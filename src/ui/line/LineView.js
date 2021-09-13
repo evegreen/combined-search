@@ -14,8 +14,6 @@ function mapLineStateToProps(lineState) {
   };
 }
 
-//// fix word wrap for long lines in context search
-
 export default class LineView {
   constructor({lineState, fileState, isContextSearch, handleClick, handleExcludeToggle}) {
     this._anchorNode = document.createComment(LineView.prototype.constructor.name);
@@ -71,7 +69,7 @@ export default class LineView {
 
   renderMatchString(isCtxt) {
     const stringElem = document.createElement('div');
-    stringElem.className = `MatchString${isCtxt && ' MatchString_ctxt'}`;
+    stringElem.className = `MatchString${isCtxt ? ' MatchString_ctxt' : ''}`;
     stringElem.onclick = this._handleClick;
     stringElem.innerHTML = `<code>${this._escapedHighlightedString}</code>`;
     return stringElem;
