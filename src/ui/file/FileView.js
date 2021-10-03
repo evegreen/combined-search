@@ -1,5 +1,5 @@
-import { clearElems } from '../../utils';
-import { excludeIcon, undoIcon, arrowDownIcon, arrowRightIcon } from '../icons';
+import {clearElems} from '../../utils';
+import {excludeIcon, undoIcon, arrowDownIcon, arrowRightIcon} from '../icons';
 
 function mapFileStateToProps(fileState) {
   return {

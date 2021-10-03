@@ -18,7 +18,7 @@ export default class LineView {
   constructor({lineState, fileState, isContextSearch, handleClick, handleExcludeToggle}) {
     this._anchorNode = document.createComment(LineView.prototype.constructor.name);
     // prev elem stored only for unmount
-    this._prevMatchElem = null;
+    this._prevElem = null;
     this._lineState = lineState;
     this._fileState = fileState;
     const {matchString, submatches, isCtxt} = this._lineState;
@@ -41,22 +41,22 @@ export default class LineView {
     const isFileCollapsed = mapFileStateToProp(this._fileState);
     const {lineNumber, isLineExcluded, isCtxt} = mapLineStateToProps(this._lineState);
     if (isFileCollapsed) {
-      clearElems([ this._prevMatchElem ]);
-      this._prevMatchElem = null;
+      clearElems([ this._prevElem ]);
+      this._prevElem = null;
       return;
     }
-    const match = document.createElement('div');
+    const line = document.createElement('div');
     const matchCls = `MatchLine${isLineExcluded ? ' MatchLine_excluded' : ''}`;
-    match.className = matchCls;
-    match.append(
+    line.className = matchCls;
+    line.append(
       this.renderLieNumber(lineNumber),
-      this.renderMatchString(isCtxt)
+      this.renderString(isCtxt)
     );
-    if (!isCtxt) match.append( this.renderExcludeButton(isLineExcluded) );
+    if (!isCtxt) line.append( this.renderExcludeButton(isLineExcluded) );
 
-    clearElems([ this._prevMatchElem ]);
-    this._prevMatchElem = match;
-    this._anchorNode.after(match);
+    clearElems([ this._prevElem ]);
+    this._prevElem = line;
+    this._anchorNode.after(line);
   }
 
   renderLieNumber(lineNumber) {
@@ -67,7 +67,7 @@ export default class LineView {
     return lineNumberElem;
   }
 
-  renderMatchString(isCtxt) {
+  renderString(isCtxt) {
     const stringElem = document.createElement('div');
     stringElem.className = `MatchString${isCtxt ? ' MatchString_ctxt' : ''}`;
     stringElem.onclick = this._handleClick;

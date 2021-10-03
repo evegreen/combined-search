@@ -1,4 +1,4 @@
-import { batchUpdate } from './createState';
+import {batchUpdate} from './createState';
 import FileView from './file/FileView';
 import LineView from './line/LineView';
 
@@ -70,13 +70,21 @@ export default class ResultsContainer {
   }
 
   _handleFileExclusion(fileState, lineStates) {
-    fileState.update({ isExcluded: true, isCollapsed: true });
-    lineStates.forEach(line => { line.isExcluded = true; });
+    fileState.update({isExcluded: true, isCollapsed: true});
+    lineStates
+      .filter(line => !line.isCtxt)
+      .forEach(matchLine => {
+        matchLine.isExcluded = true;
+      });
   }
 
   _handleFileInclusion(fileState, lineStates) {
     fileState.isExcluded = false;
-    lineStates.forEach(line => { line.isExcluded = false; });
+    lineStates
+      .filter(line => !line.isCtxt)
+      .forEach(matchLine => {
+        matchLine.isExcluded = false;
+      });
   }
 
   _handleLineExcludeToggle(lineState, fileState, boundLineStates) {
@@ -89,7 +97,11 @@ export default class ResultsContainer {
 
   _handleLineExclusion(lineState, fileState, boundLineStates) {
     lineState.isExcluded = !lineState.isExcluded;
-    if (boundLineStates.every(ml => ml.isExcluded)) {
+    if (
+      boundLineStates
+        .filter(line => !line.isCtxt)
+        .every(matchLine => matchLine.isExcluded)
+    ) {
       fileState.isExcluded = true;
     }
   }
