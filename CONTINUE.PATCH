@@ -1,0 +1,52 @@
+diff --git a/src/__TEST b/src/__TEST
+new file mode 100644
+index 0000000..46ede8e
+--- /dev/null
++++ b/src/__TEST
+@@ -0,0 +1,13 @@
++11111111111
++22222222222
++33333333333
++44444444444
++55555555555
++hellovasyawwwwwwwwwwwwwwwwwwww wwwwwwwwwwwwwwwwwwwwwwwwwww wwwwwwwwwwwwwwwwwww wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww wwwwwwwwwwwwwwwwww wwwwwwwwwwww wwwwwwwwwwwwwwwwwwwwwwwwwwwwww wwwwwwwwwwwwwwwwwwwwwwwwwwwwww  wwwwwwwwwwwwwwwwwwwwwwwwwwwwwww wwwwwwwwwwwwwwwwwwwwwwwwwwwwwww wwwwwwwwwwwwwwwwwwwwwwwwwwwwwww wwwwwwwwwwwwwwwwwwwwww
++77777777777
++88888888888
++99999999999
++00000000000
++11111111111
++
++русский текст new hijack
+diff --git a/src/ui/line/LineView.js b/src/ui/line/LineView.js
+index 6aa120e..3b0e6ff 100644
+--- a/src/ui/line/LineView.js
++++ b/src/ui/line/LineView.js
+@@ -14,6 +14,11 @@ function mapLineStateToProps(lineState) {
+   };
+ }
+ 
++function mapCtxtExclusionStateToProp() {
++  //// map UP and DOWN nonCtxt line isExcluded state to determine isExcluded prop for ctxt line
++  //// ?? how to map many states to get prop and working subscription ??
++}
++
+ export default class LineView {
+   constructor({lineState, fileState, isContextSearch, handleClick, handleExcludeToggle}) {
+     this._anchorNode = document.createComment(LineView.prototype.constructor.name);
+diff --git a/src/ui/matchHighlighter.js b/src/ui/matchHighlighter.js
+index 1551a64..7e72237 100644
+--- a/src/ui/matchHighlighter.js
++++ b/src/ui/matchHighlighter.js
+@@ -4,6 +4,12 @@ const OPEN_HL_SPAN = '<span class="Highlight">';
+ const CLOSE_SPAN = '</span>';
+ 
+ export function highlightString(matchString, submatches, escapeWhitespaces = false) {
++  if (
++    matchString.includes('русский текст new hijack') &&
++    !matchString.includes('matchString')
++  ) {
++    debugger;
++  }
+   submatches.sort((a, b) => a.start - b.start);
+   let sourceString = matchString;
+   let resultString = '';
