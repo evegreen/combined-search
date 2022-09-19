@@ -11,7 +11,7 @@
     "open": "8.4.0",
     "react-dev-utils": "11.0.4",
     "tmp": "0.2.1",
-    "vscode-ripgrep": "1.13.2"
+    "@vscode/ripgrep": "1.14.2"
   },
   "devDependencies": {
     "@types/mocha": "9.1.1",
