@@ -1,6 +1,8 @@
 import { spawn } from 'child_process';
 import Promise from 'bluebird';
-import { rgPath } from 'vscode-ripgrep';
+import { getRgPath } from './rgProvider.js';
+const rgPath = getRgPath();
+
 
 function handleRgJsonData(data, prevUnparsedResult) {
   return prevUnparsedResult += data;

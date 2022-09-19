@@ -1,6 +1,6 @@
 import program from 'commander';
 import clipboardy from 'clipboardy';
-import {getVersions} from './version.js';
+import { getVersions } from './version.js';
 
 // TODO: improvement: make possible use many search paths, like in ripgrep
 
@@ -13,10 +13,12 @@ export default function parseArgs() {
     console.log('  cs -d "^" "pattern1^pattern2"')
     console.log('  cs -i "pattern1|pattern2" someDirectory/');
     console.log('  cs -s "new |delete "');
-    console.log('  cs -m 500K "pattern"');
     console.log('  cs -c');
+    console.log('  cs -M 500K "pattern"');
     console.log();
-    console.log('If you has runned webpack-dev-server (or openEditorService), you may click on search result matches, your editor will open automatically');
+    console.log('If you started webpack-dev-server (or openEditorService), you may click on search result matches, your editor will open automatically');
+    console.log();
+    console.log('For using specific version of ripgrep, create bin/rg file or symlink in project root directory');
   });
 
   program
@@ -26,8 +28,8 @@ export default function parseArgs() {
     .option('-d, --delimiter [value]', 'delimiter for each search entry', '|')
     .option('-i, --ignore-case', 'case-insensitive search')
     .option('-s, --sort-different-matches', 'sort by different matches count desc')
-    .option('-m, --max-filesize [value]', 'ignore files larger than NUM in size. this does not apply to directories. (rg compatible)')
     .option('-c, --clipboard', 'pass patterns from clipboard (experimental)')
+    .option('-M, --max-filesize [value]', 'ignore files larger than NUM in size. this does not apply to directories. (rg compatible)')
     .parse(process.argv);
 
   const options = program.opts();
