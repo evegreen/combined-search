@@ -16,6 +16,7 @@ export default function renderHtmlResult(initialState) {
     () => escapeForJsTemplateLiteral(JSON.stringify(initialState))
   );
   // avoid replacer patterns usage
-  result = result.replace('$$QUERY_PATTERNS_TITLE$$', () => queryPatterns);
+  // TODO: use passed delimiter instead of '|' ??
+  result = result.replace('$$QUERY_PATTERNS_TITLE$$', () => queryPatterns.join('|'));
   return result;
 };

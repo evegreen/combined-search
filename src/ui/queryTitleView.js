@@ -1,6 +1,9 @@
-export default function renderQueryTitle(query) {
+import { escapeHtml } from '../utils.js';
+
+export default function renderQueryTitle(unifiedQuery) {
+  const escapedUnifiedQuery = escapeHtml(unifiedQuery);
   const queryTitle = document.createElement('div');
   queryTitle.className = 'QueryTitle';
-  queryTitle.innerHTML = `cs <span class="Highlight">${query}</span>`;
+  queryTitle.innerHTML = `<code><span class="Highlight">${escapedUnifiedQuery}</span></code>`;
   return queryTitle;
 }

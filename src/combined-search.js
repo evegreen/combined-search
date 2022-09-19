@@ -12,7 +12,7 @@ import {
 import renderHtmlResult from './renderer.js';
 import { sortObjectMap } from './utils.js';
 
-const { inaccurateQuery, patterns, searchPath, ignoreCase, maxFilesize, sortByDiffMatchCountArg } = parseArgs();
+const { unifiedQueryTitle, patterns, searchPath, ignoreCase, maxFilesize, sortByDiffMatchCountArg } = parseArgs();
 runSearch();
 
 async function runSearch() {
@@ -35,7 +35,7 @@ async function search() {
   absPathsMap = resolvePaths(sortedResult);
   return {
     queryPatterns: patterns,
-    query: inaccurateQuery,
+    unifiedQueryTitle,
     searchResult: sortedResult,
     stats,
     absPathsMap
@@ -51,7 +51,7 @@ async function searchCombined() {
   const absPathsMap = resolvePaths(sortedCombinedResult);
   return {
     queryPatterns: patterns,
-    query: inaccurateQuery,
+    unifiedQueryTitle,
     searchResult: sortedCombinedResult,
     stats: combinedStats,
     absPathsMap

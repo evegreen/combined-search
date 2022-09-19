@@ -10,10 +10,10 @@ const INITIAL_RESULTS_STATE = `$$INITIAL_RESULTS_STATE$$`;
 
 function renderUi() {
   const rootState = new ResultsState(INITIAL_RESULTS_STATE);
-  const { query, stats, absPathsMap, files } = rootState;
+  const { unifiedQueryTitle, stats, absPathsMap, files } = rootState;
   const settingsState = setUpSettings();
   const editorService = new EditorService(absPathsMap, settingsState);
-  const queryTitle = renderQueryTitle(query);
+  const queryTitle = renderQueryTitle(unifiedQueryTitle);
   const statsElem = renderStats(stats);
   const settingsContainer = new SettingsContainer(settingsState);
   const resultsContainer = new ResultsContainer({
