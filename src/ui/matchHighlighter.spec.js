@@ -51,6 +51,7 @@ describe('matchHighlighter', () => {
     assert.equal(resultString, expectedString);
   });
 
+  // TODO: decompose test on escape symbols in pattern or in match string (both?)
   it('with escaping symbols', () => {
     const matchString = '<hey> test& <lol>';
     const queryPatterns = [ 'test&' ];
@@ -82,6 +83,34 @@ describe('matchHighlighter', () => {
     const matchString = 'hello hello span hi';
     const queryPatterns = ['hello', 'span'];
     const expectedString = '<span class="Highlight">hello</span> <span class="Highlight">hello</span> <span class="Highlight">span</span> hi';
+    const submatches = evalNonRegexRgSubmatches(matchString, queryPatterns);
+    const resultString = highlightString(matchString, submatches);
+    assert.equal(resultString, expectedString);
+  });
+
+  it('should not add string chars, when almost same matches are in same location', () => {
+    const matchString = 'AAAAA';
+    const queryPatterns = ['AAAAA', 'AAAA'];
+    const expectedString = '<span class="Highlight">AAAAA</span>';
+    const submatches = evalNonRegexRgSubmatches(matchString, queryPatterns);
+    const resultString = highlightString(matchString, submatches);
+    assert.equal(resultString, expectedString);
+  });
+
+  it('should not add string chars, when matches are intersected', () => {
+    const matchString = 'AAABBB';
+    const queryPatterns = ['AAAB', 'ABBB'];
+    const expectedString = '<span class="Highlight">AAABBB</span>';
+    const submatches = evalNonRegexRgSubmatches(matchString, queryPatterns);
+    const resultString = highlightString(matchString, submatches);
+    assert.equal(resultString, expectedString);
+  });
+
+  // TODO: decompose
+  it('MULTI INTERSECTIONS', () => {
+    const matchString = 'abcdefghijklmnopqrstuvwxyz1234567890';
+    const queryPatterns = ['123456789', '12345', 'abcde', 'bcdefghijklmnopqrst', 'qrstuv', 'uvwxyz', '345'];
+    const expectedString = '<span class="Highlight">abcdefghijklmnopqrstuvwxyz123456789</span>0';
     const submatches = evalNonRegexRgSubmatches(matchString, queryPatterns);
     const resultString = highlightString(matchString, submatches);
     assert.equal(resultString, expectedString);
