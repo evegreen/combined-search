@@ -1,7 +1,6 @@
 import { spawn } from 'child_process';
 import Promise from 'bluebird';
 import { getRgPath } from './rgProvider.js';
-const rgPath = getRgPath();
 
 
 function handleRgJsonData(data, prevUnparsedResult) {
@@ -38,6 +37,7 @@ function parseResult(unparsedResult) {
 }
 
 export function rgJsonCommand(ignoreCase, maxFilesize, pattern, searchPath) {
+  const rgPath = getRgPath();
   return new Promise((resolve, reject) => {
     let rgOptions = ['--json', '--hidden'];
     // TODO: allow configure which patterns is regex, and which not

@@ -11,14 +11,23 @@ import {
 } from './combiner.js';
 import renderHtmlResult from './renderer.js';
 import { sortObjectMap } from './utils.js';
+import { determineRgPath } from './rgProvider.js';
 
-const { unifiedQueryTitle, patterns, searchPath, ignoreCase, maxFilesize, sortByDiffMatchCountArg } = parseArgs();
-runSearch();
 
-async function runSearch() {
+main();
+
+
+async function main() {
+  await determineRgPath();
+  const args = parseArgs();
+  await runSearch(args);
+}
+
+async function runSearch(args) {
   try {
+    const { patterns } = args;
     const searchFn = patterns.length === 1 ? search : searchCombined;
-    const searchResults = await searchFn();
+    const searchResults = await searchFn(args);
     const htmlResult = renderHtmlResult(searchResults);
     const resultFilename = saveToTempFile(htmlResult);
     open(resultFilename);
@@ -27,7 +36,8 @@ async function runSearch() {
   }
 }
 
-async function search() {
+async function search(args) {
+  const { unifiedQueryTitle, patterns, searchPath, ignoreCase, maxFilesize } = args;
   const { result, stats } = await rgJsonCommand(ignoreCase, maxFilesize, patterns[0], searchPath);
   let sortedResult = null;
   let absPathsMap = null;
@@ -42,7 +52,8 @@ async function search() {
   };
 }
 
-async function searchCombined() {
+async function searchCombined(args) {
+  const { unifiedQueryTitle, patterns, searchPath, ignoreCase, maxFilesize, sortByDiffMatchCountArg } = args;
   const rgCommands = patterns.map(pattern => rgJsonCommand(ignoreCase, maxFilesize, pattern, searchPath));
   const resultsWithStats = await Promise.all(rgCommands);
   const { combinedResult, combinedStats } = combineResults(resultsWithStats);
