@@ -1,6 +1,7 @@
 import program from 'commander';
 import clipboardy from 'clipboardy';
 import { getVersions } from './version.js';
+import { unprefixFilePath } from './utils.js';
 
 // TODO: improvement: make possible use many search paths, like in ripgrep
 
@@ -58,6 +59,7 @@ export default function parseArgs() {
     searchPath = program.args[0];
   }
   patterns = patterns.filter(x => x !== '');
+  searchPath = unprefixFilePath(searchPath);
 
   const rawArgsReducer = (acc, rawArg, idx) => {
     let arg = rawArg;
@@ -73,6 +75,7 @@ export default function parseArgs() {
         arg = 'cli.js';
       }
     }
+    arg = unprefixFilePath(arg);
     acc += `${arg} `;
     return acc;
   };

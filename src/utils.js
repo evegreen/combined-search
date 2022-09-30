@@ -41,3 +41,12 @@ export function clearElems(elems) {
     elem.parentNode.removeChild(elem);
   });
 }
+
+export function unprefixFilePath(filePath) {
+  if (filePath.length < 3) return filePath;
+  let path = filePath;
+  while (path.startsWith('./')) {
+    path = path.substring(2);
+  }
+  return path;
+}

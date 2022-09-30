@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import Promise from 'bluebird';
 import { getRgPath } from './rgProvider.js';
+import { unprefixFilePath } from './utils.js';
 
 
 function handleRgJsonData(data, prevUnparsedResult) {
@@ -15,7 +16,7 @@ function parseResult(unparsedResult) {
     const { type, data } = JSON.parse(json);
     const { path, lines, line_number: lineNumber, submatches } = data;
     if (type === 'match') {
-      const filePath = path.text;
+      const filePath = unprefixFilePath(path.text);
       if (!rgResult[filePath]) {
         rgResult[filePath] = { entries: {} };
       }
