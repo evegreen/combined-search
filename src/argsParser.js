@@ -3,7 +3,6 @@ import clipboardy from 'clipboardy';
 import { getVersions } from './version.js';
 import { unprefixFilePath } from './utils.js';
 
-// TODO: improvement: make possible use many search paths, like in ripgrep
 
 export default function parseArgs() {
   program.on('--help', () => {
@@ -16,6 +15,8 @@ export default function parseArgs() {
     console.log('  cs -s "new |delete "');
     console.log('  cs -c');
     console.log('  cs -M 500K "pattern"');
+    console.log('  cs "foo" src/');
+    console.log('  cs "bar" src/ scripts/');
     console.log();
     console.log('If you started webpack-dev-server (or openEditorService), you may click on search result matches, your editor will open automatically');
     console.log();
@@ -25,7 +26,7 @@ export default function parseArgs() {
   program
     .version(getVersions())
     .name('cs')
-    .usage('[global options] "entries" [path]')
+    .usage('[GLOBAL OPTIONS] "ENTRIES" [PATH ...]')
     .option('-d, --delimiter [value]', 'delimiter for each search entry', '|')
     .option('-i, --ignore-case', 'case-insensitive search')
     .option('-s, --sort-different-matches', 'sort by different matches count desc')
@@ -37,29 +38,29 @@ export default function parseArgs() {
   const { delimiter, ignoreCase, maxFilesize, sortDifferentMatches, clipboard } = options;
 
   const argsWithoutPathExpectedLength = clipboard ? 0 : 1;
-  const argsExpectedLength = clipboard ? 1 : 2;
+  const argsMinLength = clipboard ? 1 : 2;
   if (program.args.length === argsWithoutPathExpectedLength) {
     program.args.push('./');
     program.rawArgs.push('./');
   }
 
-  if (program.args.length !== argsExpectedLength) {
+  if (program.args.length < argsMinLength) {
     console.error('Invalid command\n');
     program.help();
   }
 
   let patterns;
-  let searchPath;
+  let searchPaths;
   if (!clipboard) {
     patterns = program.args[0].split(delimiter);
-    searchPath = program.args[1];
+    searchPaths = program.args.slice(1);
   } else {
     ////test on windows
     patterns = clipboardy.readSync().split('\n');
-    searchPath = program.args[0];
+    searchPaths = program.args;
   }
   patterns = patterns.filter(x => x !== '');
-  searchPath = unprefixFilePath(searchPath);
+  searchPaths = searchPaths.map(unprefixFilePath);
 
   const rawArgsReducer = (acc, rawArg, idx) => {
     let arg = rawArg;
@@ -88,7 +89,7 @@ export default function parseArgs() {
   return {
     unifiedQueryTitle,
     patterns,
-    searchPath,
+    searchPaths,
     ignoreCase,
     maxFilesize,
     sortByDiffMatchCountArg: sortDifferentMatches

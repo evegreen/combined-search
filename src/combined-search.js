@@ -37,8 +37,8 @@ async function runSearch(args) {
 }
 
 async function search(args) {
-  const { unifiedQueryTitle, patterns, searchPath, ignoreCase, maxFilesize } = args;
-  const { result, stats } = await rgJsonCommand(ignoreCase, maxFilesize, patterns[0], searchPath);
+  const { unifiedQueryTitle, patterns, searchPaths, ignoreCase, maxFilesize } = args;
+  const { result, stats } = await rgJsonCommand(ignoreCase, maxFilesize, patterns[0], searchPaths);
   let sortedResult = null;
   let absPathsMap = null;
   sortedResult = sortObjectMap(result, matchLinesCountComparator);
@@ -53,8 +53,8 @@ async function search(args) {
 }
 
 async function searchCombined(args) {
-  const { unifiedQueryTitle, patterns, searchPath, ignoreCase, maxFilesize, sortByDiffMatchCountArg } = args;
-  const rgCommands = patterns.map(pattern => rgJsonCommand(ignoreCase, maxFilesize, pattern, searchPath));
+  const { unifiedQueryTitle, patterns, searchPaths, ignoreCase, maxFilesize, sortByDiffMatchCountArg } = args;
+  const rgCommands = patterns.map(pattern => rgJsonCommand(ignoreCase, maxFilesize, pattern, searchPaths));
   const resultsWithStats = await Promise.all(rgCommands);
   const { combinedResult, combinedStats } = combineResults(resultsWithStats);
   const comparator = sortByDiffMatchCountArg ? differentMatchCountComparator : matchLinesCountComparator;

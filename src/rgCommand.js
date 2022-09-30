@@ -37,7 +37,7 @@ function parseResult(unparsedResult) {
   return {rgResult, stats};
 }
 
-export function rgJsonCommand(ignoreCase, maxFilesize, pattern, searchPath) {
+export function rgJsonCommand(ignoreCase, maxFilesize, pattern, searchPaths) {
   const rgPath = getRgPath();
   return new Promise((resolve, reject) => {
     let rgOptions = ['--json', '--hidden'];
@@ -45,7 +45,7 @@ export function rgJsonCommand(ignoreCase, maxFilesize, pattern, searchPath) {
     rgOptions.push('--fixed-strings');
     if (ignoreCase) rgOptions.push('--ignore-case');
     if (maxFilesize) rgOptions.push('--max-filesize', maxFilesize);
-    const rgCmd = spawn(rgPath, [...rgOptions, pattern, searchPath]);
+    const rgCmd = spawn(rgPath, [...rgOptions, pattern, ...searchPaths]);
     rgCmd.stderr.on('data', (data) => {
       reject(new Error(data));
     });
